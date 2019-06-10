@@ -1,4 +1,5 @@
-[toc]
+[ toc ]
+
 
 ### Scala Cookbook Notes
 
