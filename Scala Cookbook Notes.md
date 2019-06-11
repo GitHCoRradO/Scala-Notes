@@ -1,6 +1,3 @@
-[ toc ]
-
-
 ### Scala Cookbook Notes
 
 #### Ch01  String
@@ -99,6 +96,8 @@
     scala> val fruits = "apple" :: "banana" :: "orange" :: Nil fruits: List[java.lang.String] = List(apple, banana, orange)
     scala> val out = for (e <- fruits) yield e.toUpperCase out: List[java.lang.String] = List(APPLE, BANANA, ORANGE)
     ```
+    
+##### breaks; match case
 4. labeled breaks
 
     ```
@@ -132,5 +131,40 @@
    
    ```variableName @ patter```
    
-7. case classes can be used in match expressions
+7. _case classes_ can be used in match expressions
+
+#### Ch04 Classes and Properties
+
+##### The effect of constructor parameter settings
+    | Visibility        |     Accessor?      |  Mutator?     |
+    |-------------------|:------------------:|--------------:|
+    | var               |  yes               | yes           |
+    | val               |  yes               | no            |
+    | Default visibility|  no                | no            |
+    |(no val or var)    |                    |               |
+    |Adding private     | no                 |  no           |
+    |keyword to val,var |                    |               |
+
+##### Case class
+1. Case class constructor parameters are val by default.
+   So if you define a case class field without adding val or var,
+   you can still access the field, just as if it were defined as a val.
+   
+##### companion object
+1. A companion object is simply an object that’s defined in the same file as a class, where the object and class have the same name. If you declare a class named Foo in a file named Foo.scala, and then declare an object named Foo in that same file, the Foo object is the compan‐ ion object for the Foo class. A companion object has several purposes, and one purpose is that any method declared in a companion object will appear to be a static method on the object. 
+
+##### Preventing getter and setter methods from being generated
+1. To do this, define the field with *private* or *private[this]* access modifiers: with *private*, the field is only available to instances of the same class; with *private[this]*, the field can only be accessed by the instance of the class itself, not available by other instances of the same type.
+
+##### Assigning a field to a block or function
+1. Define a field to be *lazy* makes it not evaluated until accessed; it is a useful approach when the field might not be accessed in the normal processing of your algorithms, or if running the algorithm will take a long time, and you want to defer that to a later time.
+##### Calling a superclass constructor
+1. the first line of an auxiliary constructor must be a call to another constructor of the current class, there is no way for auxiliary con‐ structors to call a superclass constructor.
+2. the primary constructor of the Employee (sub) class can call any constructor in the Person (base) class, but the auxiliary constructors of the Employee class must call a previously defined constructor of its own class with the this method as its first line.
+3. Therefore, there’s no direct way to control which superclass constructor is called from an auxiliary constructor in a subclass. In fact, because each auxiliary constructor must call a previously defined constructor in the same class, all auxiliary constructors will eventually call the same superclass constructor that’s called from the subclass’s primary constructor.
+
+
+
+
+
 
