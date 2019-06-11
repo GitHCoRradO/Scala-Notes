@@ -1,2 +1,2 @@
-### [Notes for Scala Cookbook](./Scala Cookbook Notes.md)
+### [Notes for Scala Cookbook](Scala Cookbook Notes.md)
 
