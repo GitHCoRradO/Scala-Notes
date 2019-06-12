@@ -1,8 +1,8 @@
-### Scala Cookbook Notes
+## Scala Cookbook Notes
 
-#### Ch01  String
+### Ch01  String
 
-##### String interpolators
+#### String interpolators
 
 1. print(s".....")
 2. print(f"......")  for printf style: Table 1-1 and [format specifiers and examples](http://alvinalexander.com/programming/printf-format-cheat-sheet)
@@ -15,7 +15,7 @@
    res1: String = foo\nbar
    ```
    
-##### Replacing Patterns in Strings  (Regex)
+#### Replacing Patterns in Strings  (Regex)
 
 1. replaceAll
       ```scala> val address = "123 Main Street".replaceAll("[0-9]", "x")
@@ -33,11 +33,11 @@
      regex: scala.util.matching.Regex = H
      scala> val result = regex.replaceFirstIn("Hello world", "J") result: String = Jello world
      ```
-##### Add your own methods to the String class
+#### Add your own methods to the String class
 
-#### Ch02 Numbers
+### Ch02 Numbers
 
-##### Comparing floating-point numbers
+#### Comparing floating-point numbers
 
 1.
      ```
@@ -51,19 +51,19 @@
      scala> ~=(b, a, 0.0001) res1: Boolean = true
      ```
 
-##### Generating random numbers
+#### Generating random numbers
 
 1. [how to create a list of alpha or alphanumeric characters](http://alvinalexander.com/scala/create-list-alpha-alphanumeric-characters-in-scala)
 
 2. [generating random strings](http://alvinalexander.com/scala/creating-random-strings-in-scala)
 
-##### Formatting numbers and currency
+#### Formatting numbers and currency
 
 1. [The Joda Money library is a Java library for handling currency](https://www.joda.org/joda-money/)
 
-#### Ch03 Control Structures
+### Ch03 Control Structures
 
-##### Looping for and foreach
+#### Looping for and foreach
 
 1. zipWithIndex
    ```
@@ -97,7 +97,7 @@
     scala> val out = for (e <- fruits) yield e.toUpperCase out: List[java.lang.String] = List(APPLE, BANANA, ORANGE)
     ```
     
-##### breaks; match case
+#### breaks; match case
 4. labeled breaks
 
     ```
@@ -133,58 +133,58 @@
    
 7. _case classes_ can be used in match expressions
 
-#### Ch04 Classes and Properties
+### Ch04 Classes and Properties
 
-##### The effect of constructor parameter settings
+#### The effect of constructor parameter settings
 
-    | Visibility        |     Accessor?      |  Mutator?     |
-    |-------------------|--------------------|---------------|
-    | var               |  yes               | yes           |
-    |-------------------|--------------------|---------------|
-    | val               |  yes               | no            |
-    |-------------------|--------------------|---------------|
-    | Default visibility|  no                | no            |
-    |(no val or var)    |                    |               |
-    |-------------------|--------------------|---------------|
-    |Adding private     | no                 |  no           |
-    |keyword to val,var |                    |               |
-    |-------------------|--------------------|---------------|
+    | Visibility         |     Accessor?      |  Mutator?     |
+    |--------------------|--------------------|---------------|
+    | var                |  yes               | yes           |
+    |--------------------|--------------------|---------------|
+    | val                |  yes               | no            |
+    |--------------------|--------------------|---------------|
+    | Default visibility |  no                | no            |
+    |(no val or var)     |                    |               |
+    |--------------------|--------------------|---------------|
+    | Adding private     | no                 |  no           |
+    | keyword to val,var |                    |               |
+    |--------------------|--------------------|---------------|
 
-##### Case class
+#### Case class
 1. Case class constructor parameters are val by default.
    So if you define a case class field without adding val or var,
    you can still access the field, just as if it were defined as a val.
    
-##### companion object
+#### companion object
 1. A companion object is simply an object that’s defined in the same file as a class, where the object and class have the same name. If you declare a class named Foo in a file named Foo.scala, and then declare an object named Foo in that same file, the Foo object is the compan‐ ion object for the Foo class. A companion object has several purposes, and one purpose is that any method declared in a companion object will appear to be a static method on the object. 
 
-##### Preventing getter and setter methods from being generated
+#### Preventing getter and setter methods from being generated
 1. To do this, define the field with *private* or *private[this]* access modifiers: with *private*, the field is only available to instances of the same class; with *private[this]*, the field can only be accessed by the instance of the class itself, not available by other instances of the same type.
 
-##### Assigning a field to a block or function
+#### Assigning a field to a block or function
 1. Define a field to be *lazy* makes it not evaluated until accessed; it is a useful approach when the field might not be accessed in the normal processing of your algorithms, or if running the algorithm will take a long time, and you want to defer that to a later time.
-##### Auxiliary classes; Calling a superclass constructor
+#### Auxiliary classes; Calling a superclass constructor
 1. the first line of an auxiliary constructor must be a call to another constructor of the current class, there is no way for auxiliary con‐ structors to call a superclass constructor.
 2. the primary constructor of the Employee (sub) class can call any constructor in the Person (base) class, but the auxiliary constructors of the Employee class must call a previously defined constructor of its own class with the this method as its first line.
 3. Therefore, there’s no direct way to control which superclass constructor is called from an auxiliary constructor in a subclass. In fact, because each auxiliary constructor must call a previously defined constructor in the same class, all auxiliary constructors will eventually call the same superclass constructor that’s called from the subclass’s primary constructor.
-##### Defining case classes
+#### Defining case classes
 1. defining case classes causes the following codes to be automatically generated:
    1. apply method, so you need not new keyword when creating new instances of the class.
    2. accessors and mutators for parameters.
    3. a good, default toString method.
    4. unapply method for use in match expressions
    5. copy method
-##### Defining an equals method (Object equality)
+#### Defining an equals method (Object equality)
 1. in Scala, == is a method you use on each class to compare the equality of two instances, calling your equals method under the covers.
 2. The Scaladoc for the equals method of the Any class states, “any implementation of this method should be an equivalence relation.” The documentation states that an equiva‐ lence relation should have these three properties:
    1. x == x true
    2. x == y true then y == x true
    3. x == y true and y == z true then x == z true
-##### Inner class
+#### Inner class
 1. inner classes are bound to its outer objects
 
-#### Ch05 Methods
-##### Controlling method scopes
+### Ch05 Methods
+#### Controlling method scopes
 1. Descriptions of Scala’s access control modifiers
 
    | Access modifier            | Description                               |
@@ -204,7 +204,7 @@
    |(no modifier)               | the method is public                      |
    |----------------------------|-------------------------------------------|
 
-##### Setting default values for method parameters
+#### Setting default values for method parameters
 1. If your method provides a mix of some fields that offer default values and others that don’t, list the fields that have default values last. 
    ```  
    class Connection {
@@ -222,7 +222,7 @@
    } }
    
    ```
-##### Defining a method that returns multiple items(tuples)
+#### Defining a method that returns multiple items(tuples)
 1. Tuples can contain up to 22 variables and are imple‐ mented as Tuple1 through Tuple22 classes. 
    ``` 
    def getStockInfo = {
@@ -241,10 +241,10 @@
    ```
 2. tuple values can be accessed by position as result._1, result._2 and so on.
 
-##### Forcing Callers to Leave Parentheses off Accessor Methods
+#### Forcing Callers to Leave Parentheses off Accessor Methods
 1. Define your getter/accessor method without parentheses after the method name, This forces consumers of your class to call the accessor method without parentheses
 
-##### Creating Methods That Take Variable-Argument Fields
+#### Creating Methods That Take Variable-Argument Fields
 1. Define a varargs field in your method declaration by adding a * character after the field type:
    ``` 
    def printAll(strings: String*) {
@@ -265,7 +265,7 @@
    ```
 3. When declaring that a method has a field that can contain a variable number of argu‐ ments, the varargs field must be the last field in the method signature. As an implication of that rule, a method can have only one varargs field.
 
-##### declaring that a method can throw an exception
+#### declaring that a method can throw an exception
 1. Use the @throws annotation to declare the exception(s) that can be thrown:
    ``` 
    @throws(classOf[IOException])
@@ -276,28 +276,28 @@
    }
    ```
 2. Scala doesn’t require that methods declare that exceptions can be thrown, and it also doesn’t require calling methods to catch them. Even so, if one fails to test for them, they'll blow up one's code like they do in Java.
-#### Ch06 Objects
+### Ch06 Objects
  
-##### Object casting
+#### Object casting
 1. Use the asInstanceOf method to cast from one type to another.
     ``` 
     val cat = Cat("meow")
     val catAsAnimal = cat.asInstanceOf[Animal]
     ```
-##### classOf method
+#### classOf method
 1. classOf method is the scala equivalent of Java's .class; called on Class names
    ``` 
    val stringClass = classOf[String]
    stringClass.getMethods
    ```
-##### Determine the class of an Object
+#### Determine the class of an Object
 1. call getClass on an object returns the class name of the object:
    ``` 
    scala> def printClass(c: Any) { println(c.getClass) } printClass: (c: Any)Unit
    scala> printClass(1) class java.lang.Integer
    scala> printClass("yo") class java.lang.String
    ```
-##### Lauching an application with an object
+#### Lauching an application with an object
 1. define an object(object Hello) that extends the App trait, save code to a file Hello.scala(preferred)
    ``` 
    object Hello extends App {
@@ -312,10 +312,84 @@
          }
    }
    ```
-##### Creating static members with companion objects
+   
+#### Creating static members with companion objects
 1. Here is how class and its companion object is defined:
    1. Define your class and object in the same file, giving them the same name.
    2. Define members that should appear to be "static" in the object
    3. Define nonstatic(instance) members in the class
 2. a class and its companion object can access each other’s private members.
+
+#### Putting common code in package objects
+1. package objects are a great place to put methods and functions that are common to the package, as well as constants, enumerations, and implicit conversions.
+2. package objects are named _package.scala_ and they have several conventions:
+   ``` 
+   package com.alvinalexander.myapp
+   //note this blank line, it is needed
+   package object model {
+   
+   ```
+   1. this file package.scala in the com/alvinalexander/myapp/model source code directory
+
+#### Creating object instances without using the new keyword
+1. two ways:
+   1. Create a companion object for your class, and define an apply method in the com‐ panion object with the desired constructor signature.
+   2. Define your class as a case class.
+   
+### Ch07 Packaging and Imports
+#### Renaming members on Import
+1. You can create a new name for a class when you import it, and can then refer to it by the new name, or alias.
+2. This can be very helpful when trying to avoid namespace collisions and confusion. Class names like Listener, Message, Handler, Client, Server, and many more are all very common, and it can be helpful to give them an alias when you import them.
+3. Not only can you rename classes on import, but you can even rename class members.
+   ``` 
+   //example 1
+   import java.util.{Date => JDate, HashMap => JHashMap}
+   
+   //example 2
+   import java.util.{HashMap => JavaHashMap}
+   import scala.collection.mutable.{Map => ScalaMutableMap}
+        //or
+   import java.util.{HashMap => JavaHashMap}
+   import scala.collection.mutable.Map
+   
+   //example 3
+   scala> import System.out.{println => p} 
+   import System.out.{println=>p}
+   
+   scala> p("hello") hello
+   ```
+#### Hiding a class during the import process
+1. The following portion of the code is what “hides” the List, Map, Set classes, the second _ character inside the curly braces is the same as stating that you want to import everything else in the package. The _ import wildcard must be in the last position.This is because you may want to hide multiple members during the import process, and to do, so you need to list them first.
+   ``` 
+   import java.util.{List => _, Map => _, Set => _, _}
+   ```
+#### Using import statements anywhere
+1. Import statements are read in the order of the file, so where you place them in a file also limits their scope.
+   ```
+   // this doesn't work because the import is after the attempted reference
+   class ImportTests { 
+         def printRandom {
+             val r = new Random // fails
+      }
+   }
+   import scala.util.Random
+   ```
+2. In the following example, members can be accessed as follows:
+  + Code in the orderentry package can access members of foo, but can’t access mem‐
+    bers of bar or baz.
+  + Code in customers and customers.database can’t access members of foo.
+  + Code in customers can access members of bar.
+  + Code in customers.database can access members in bar and baz.
+  ``` 
+  package orderentry { import foo._
+  // more code here ...
+    }
+  package customers { import bar._
+  // more code here ...
+  package database { import baz._
+  // more code here ...
+    } 
+  }
+  ```
+
 
