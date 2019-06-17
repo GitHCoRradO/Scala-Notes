@@ -391,5 +391,154 @@
     } 
   }
   ```
+### Ch08 Traits
+#### A trait can require that any type that wishes to extend it must extend multiple other types.
+1. The following WarpCore definition requires that any type that wishes to mix it in must extend WarpCoreEjector and FireExtinguisher, in addition to extending Starship:
+   ``` 
+   trait WarpCore {
+   this: Starship with WarpCoreEjector with FireExtinguisher =>
+   }
+   
+   class Starship
+   trait WarpCoreEjector
+   trait FireExtinguisher
+   // this works
+   class Enterprise extends Starship
+     with WarpCore
+     with WarpCoreEjector
+     with FireExtinguisher
+   ```
+   
+#### Ensuring a trait can only be added to a type that has a specific method
+1. In the following example, the WarpCore trait requires that any classes that attempt to mix it in must have an ejectWarpCore method; it further states that the ejectWarpCore method must accept a String argument and return a Boolean value.:
+   ``` 
+   trait WarpCore {
+   this: { def ejectWarpCore(password: String): Boolean } =>
+   }
+   
+   class Starship {
+         // code here ...
+   }
+   class Enterprise extends Starship with WarpCore { def ejectWarpCore(password: String): Boolean = {
+   if (password == "password") { println("ejecting core") true
+   } else { false
+   } }
+   }
+   
+   //A trait can also require that a class have multiple methods. To require more than one method, just add the additional method signatures inside the block:
+   trait WarpCore { 
+        this: {
+                def ejectWarpCore(password: String): Boolean
+                def startWarpCore: Unit
+        } => 
+   }
+       class Starship
+   class Enterprise extends Starship with WarpCore { def ejectWarpCore(password: String): Boolean = {
+   if (password == "password") { println("core ejected"); true } else false }
+   def startWarpCore { println("core started") } }
+   ```
+   
+#### Adding a trait to an object instance
+#### Extending a Java interface like a trait
+1. In your Scala application, use the extends and with keywords to implement your Java interfaces, just as though they were Scala traits.The difference is that Java interfaces don’t implement behavior, so if you’re defining a class that extends a Java interface, you’ll need to implement the methods, or declare the class abstract.
+
+### Ch09 Functional Programming
+#### Using function literals
+1. anonymous function aka function literal
+
+#### Using functions as variables
+1. Summary notes:
+   1. Think of the => symbol as a transformer. It transforms the input data on its left side to some new output data, using the algorithm on its right side.
+   2. Use def to define a method, val, to create a function.
+   3. When assigning a function to a variable, a function literal is the code on the right
+      side of the expression.
+   4. A function value is an object, and extends the FunctionN traits in the main scala package, such as Function0 for a function that takes no parameters.
+2. Several examples:
+   ``` 
+   val f: (Int) => Boolean = i => { i % 2 == 0 }
+   val f: Int => Boolean = i => { i % 2 == 0 }
+   val f: Int => Boolean = i => i % 2 == 0
+   val f: Int => Boolean = _ % 2 == 0
+   
+   // implicit approach
+   val add = (x: Int, y: Int) => { x + y } 
+   val add = (x: Int, y: Int) => x + y
+   
+   // explicit approach
+   val add: (Int, Int) => Int = (x,y) => { x + y } 
+   val add: (Int, Int) => Int = (x,y) => x + y
+   
+   ```
+#### Defining a method that accepts a simple function parameter
+1. Define your method, including the signature for the function you want to take as a method parameter.
+2. Define one or more functions that match this signature.
+3. Sometime later, pass the function(s) as a parameter to your method.
+   ``` 
+   scala> def executeFunction(callback:() => Unit) { callback() } 
+   executeFunction: (callback: () => Unit)Unit
+   scala> val sayHello = () => { println("Hello") }
+   sayHello: () => Unit = <function0>
+   scala> executeFunction(sayHello)
+   Hello
+   ```
+#### More complex functions
+1. The general syntax for describing a function as a method parameter is this:
+
+   ``` parameterName: (parameterType(s)) => returnType```
+2. In all of the previous examples where you created functions with the val keyword, you could have created methods (with a def keyword), and the examples would still work. 
+   ``` 
+   def exec(callback: (Any, Any) => Unit, x : Any, y : Any): Unit = {
+     callback(x, y)
+   }
+   
+   val printTwoThings = (a: Any, b: Any) => {
+     println(a)
+     println(b)
+   }
+   def printTwoThings1(a: Any, b: Any) {
+     println(a)
+     println(b)
+   }
+   case class Person(name: String)
+   
+   exec(printTwoThings1, "Hello", Person("Dave"))
+   ```
+#### Using closures
+#### Using partially applied functions
+1. You can use partially applied functions to make programming easier by binding some arguments—typically some form of local arguments—and leaving the others to be filled in.
+   ``` 
+   def wrap(prefix: String, html: String, suffix: String) = {
+     prefix + html + suffix
+   }
+   //partially applied wrap
+   val wrapWithDiv = wrap("<div>", _: String, "</div>")
+   
+   scala> wrapWithDiv("<p>Hello, world</p>")
+   res0: String = <div><p>Hello, world</p></div>
+   
+   //use the orignial wrap
+   scala> wrap("<pre>", "val x = 1", "</pre>")
+   res1: String = <pre>val x = 1</pre>
+   ```
+#### Creating a function that returns a function
+1. Define a function that returns an algorithm (an anonymous function), assign that to a new function, and then call that new function.
+   ``` 
+   def greeting(language: String) = (name: String) => {
+        language match {
+            case "english" => "Hello, " + name
+            case "spanish" => "Buenos dias, " + name
+            }
+        }
+   
+   ```
+2. On the left side of the = symbol you have a normal method declaration:def and method name and parameters list;
+   On the right side of the = is a function literal (also known as an anonymous function)
+
+#### Creating partial functions
+1. A partial function is a function that does not provide an answer for every possible input value it can be given. It provides an answer only for a subset of possible data, and defines the data it can handle. In Scala, a partial function can also be queried to determine if it can handle a particular value.
+
+### Ch10 Collections
+####
+
 
 
