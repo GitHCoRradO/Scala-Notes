@@ -538,7 +538,222 @@
 1. A partial function is a function that does not provide an answer for every possible input value it can be given. It provides an answer only for a subset of possible data, and defines the data it can handle. In Scala, a partial function can also be queried to determine if it can handle a particular value.
 
 ### Ch10 Collections
-####
-
-
-
+#### predicate
+1. A predicate is simply a method, function, or anonymous function that takes one or more parameters and returns a Boolean value. 
+#### Choosing a collection class
+1. strict and lazt collections: In a strict collection, memory for the elements is allocated immediately, and all of its elements are immediately evaluated when a transformer method is invoked. In a lazy collection, memory for the elements is not allocated immediately, and transformer methods do not construct new elements until they are demanded.
+#### Choosing a collection method to solve a problem
+1. Methods organized by category
+   1. filtering methods: Methods that can be used to filter a collection
+   2. transformer methods: Transformer methods take at least one input collection to create a new output col‐ lection, typically using an algorithm you provide.
+   3. grouping methods: These methods let you take an existing collection and create multiple groups from that one collection.
+   4. Informational and mathematical methods: These methods provide information about a collection
+   5. other methods
+#### Understanding the performance of collections
+1. When choosing a collection for an application where performance is extremely impor‐ tant, you want to choose the right collection for the algorithm.
+#### Declaring a type when creating a collection
+1. Scala does not automatically assign the type you want when you create a collection of mixed types.
+   ``` 
+   //code example
+   scala> val x = List(1, 2.0, 33D, 400L)
+   x: List[Double] = List(1.0, 2.0, 33.0, 400.0)
+         // ^ note the Double here
+         
+   scala> val x = List[Number](1, 2.0, 33D, 400L)
+   x: List[java.lang.Number] = List(1, 2.0, 33.0, 400)
+   
+   scala> val x = List[AnyVal](1, 2.0, 33D, 400L) 
+   x: List[AnyVal] = List(1, 2.0, 33.0, 400)
+   ```
+#### Understanding mutable variables with immutable collections
+1. Though it looks like you’re mutating an immutable collection, what’s really happening is that the sisters variable points to a new collection each time you use the :+ method. The sisters variable is mutable—like a non-final field in Java—so it’s actually being reassigned to a new collection during each step. 
+   ``` 
+   scala> var sisters = Vector("Melinda")
+   sisters: collection.immutable.Vector[String] = Vector(Melinda)
+   scala> sisters = sisters :+ "Melissa"
+   sisters: collection.immutable.Vector[String] = Vector(Melinda, Melissa)
+   scala> sisters = sisters :+ "Marisa"
+   sisters: collection.immutable.Vector[String] = Vector(Melinda, Melissa, Marisa)
+   scala> sisters.foreach(println)
+   Melinda
+   Melissa
+   Marisa
+   ```
+2. The elements in a mutable collection can be changed; the elements in an immutable collection cannot be changed.
+#### Make Vector your "Go To" immutable sequence
+1. if you create an instance of an IndexedSeq, scala returns a Vector; As a result, I’ve seen some developers create an IndexedSeq in their code, rather than a Vector, to be more generic and to allow for potential future changes.
+#### Make ArrayBuffer your "Go To" mutable sequence
+#### Looping over a collection with foreach
+1. The foreach method takes a function as an argument. The function you define should take an element as an input parameter, and should not return anything. The input parameter type should match the type stored in the collection. As foreach executes, it passes one element at a time from the collection to your function until it reaches the last element in the collection.
+#### Looping over a collection with a for loop
+1. for; for/ yield; for with guards
+#### Using zipWithIndex or zip to create loop counters
+1. Use the zipWithIndex or zip methods to create a counter automatically. 
+   ``` 
+   val days = Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+   
+   days.zipWithIndex.foreach {
+        case(day, count) => println(s"$count is $day")
+   }
+   for ((day, count) <- days.zipWithIndex) { 
+        println(s"$count is $day")
+   }
+   /*  output:
+        0 is Sunday
+        1 is Monday
+        2 is Tuesday
+        3 is Wednesday
+        4 is Thursday   
+        .....  */
+   ```
+2. When using zipWithIndex, the counter always starts at 0. You can also use the zip method with a Stream to create a counter. This gives you a way to control the starting value:
+   ``` 
+   for ((day,count) <- days.zip(Stream from 1)) {
+       println(s"day $ count is $day")
+       }
+   ```
+3. When zipWithIndex is used on a sequence, it returns a sequence of Tuple2 elements
+   ``` 
+   val list = List("a", "b", "c")
+   val zwi = list.zipWithIndex
+   // zwi: List[(String, Int)] = List((a,0), (b,1), (c,2))
+   ```
+#### Transforming One Collection to Another with for/ yield
+1. In general, the collection type that’s returned by a for comprehension will be the same type that you begin with. If you begin with an ArrayBuffer, you’ll end up with an ArrayBuffer.However, this isn’t always the case.
+#### Transforming one collection to another with map
+1. For simple cases, using map is the same as using a basic for/yield loop
+2. But once you add a guard, a for/yield loop is no longer directly equivalent to just a map method call. If you attempt to use an if statement in the algorithm you pass to a map method, you’ll get a very different result:
+   ``` 
+   scala> val fruits = List("apple", "banana", "lime", "orange", "raspberry")
+   scala> val newFruits = fruits.map( f =>
+            if (f.length < 6) f.toUpperCase)
+   newFruits: List[Any] = List(APPLE, (), LIME, (), ())
+   
+   //here we could filter the result after calling map to clean up the result:
+   scala> newFruits.filter(_ != ()) 
+   res0: List[Any] = List(APPLE, LIME)
+   
+   //in this situation, it helps to think of an if statement as being a filter, so the correct solution is to first filter the collection, and then call map:
+   scala> val fruits = List("apple", "banana", "lime", "orange", "raspberry") 
+   fruits: List[String] = List(apple, banana, lime, orange, raspberry)
+   scala> fruits.filter(_.length < 6).map(_.toUpperCase) 
+   res1: List[String] = List(APPLE, LIME)
+   ```
+#### Flattening a list of lists with flatten
+1. Because an Option can be thought of as a container that holds zero or one elements, flatten has a very useful effect on a sequence of Some and None elements. It pulls the values out of the Some elements to create the new list, and drops the None elements.
+   ```
+   val x = Vector(Some(1), None, Some(3), None)
+   x.flatten
+   //res1: Vector[Int] = Vector(1, 3)
+   
+   ```
+#### Combining map and flatten with flatMap
+1. Use flatMap in situations where you run map followed by flatten. 
+   + You’re using map (or a for/yield expression) to create a new collection from an existing collection.
+   + The resulting collection is a list of lists.
+   + You call flatten immediately after map (or a for/yield expression).
+   + When you’re in this situation, you can use flatMap instead.
+#### Using filter to filter a collection
+1. filter returns all elements from a sequence that return true when your function/predicate is called. There’s also a filterNot method that returns all elements from a list for which your function returns false.
+   + filter walks through all of the elements in the collection; some of the other methods stop before reaching the end of the collection.
+   + filter lets you supply a predicate (a function that returns true or false) to filter the elements.
+#### Extracting a sequence of elements from a collection
+1. There are quite a few collection methods you can use to extract a __*contiguous* list__ of elements from a sequence, including drop, dropWhile, head, headOption, init, last, lastOption, slice, tail, take, takeWhile.
+#### Splitting sequences into subsets
+1. groupBy, partition, span, splitAt; sliding, unzip
+#### Walking through a collection with the reduce and fold methods
+1. [Methods may have multiple parameter lists. Its use cases are 3 of the following:
+   SINGLE FUNCTIONAL PARAMETER, IMPLICIT PARAMETERS, PARTIAL APPLICATION](https://docs.scala-lang.org/tour/multiple-parameter-lists.html)
+2. reduceLeft, foldLeft, reduceRight, foldRight, scanLeft, scanRight
+#### Extracting unique elements from a sequence
+1. The distinct method returns a new collection with the duplicate values removed. Remember to assign the result to a new variable. This is required for both immutable and mutable collections.
+2. If you happen to need a Set, converting the collection to a Set is another way to remove the duplicate elements. 
+#### Merging sequential collections
+1. Join two sequences into one sequence, either keeping all of the original elements, finding the elements that are common to both collections, or finding the difference between the two sequences:
+   + ++=
+   + ++
+   + union, diff, intersect
+#### Merging two sequential collections into pairs with zip
+1. Use the zip method to join two sequences into one, the following code block creates an Array of Tuple2 elements, which is a merger of the two original se‐ quences.Once you have a sequence of tuples like couples, you can convert it to a Map, which may be more convenient.
+   ```
+   val women = List("Wilma", "Betty")
+   val men = List("Fred", "Barney")
+   val couples = women zip men
+   couples: List[(String, String)] = List((Wilma,Fred), (Betty,Barney))
+   
+   val couplesMap = couples.toMap
+   ```
+2. If one collection contains more items than the other collection, the items at the end of the longer collection will be dropped.
+#### Creating a lazy view on a collection
+1. Except for the Stream class, whenever you create an instance of a Scala collection class, you’re creating a strict version of the collection. This means that if you create a collection that contains one million elements, memory is allocated for all of those elements im‐ mediately.
+2. In Scala you can optionally create a view on a collection. A view makes the result non‐ strict, or lazy. This changes the resulting collection, so __when it’s used with a transformer method__, the elements will only be calculated as they are accessed, and not “eagerly,” as they normally would be.
+3. Use cases
+   + Performance: Regarding performance, assume that you get into a situation where you may (or may not) have to operate on a collection of a billion elements. You certainly want to avoid running an algorithm on a billion elements if you don’t have to, so using a view makes sense here.
+   + To treat a collection like a database view: Changing the elements in the array updates the view, and changing the elements referenced by the view changes the elements in the array. When you need to modify a subset of elements in a collection, creating a view on the original collection and modifying the elements in the view can be a powerful way to achieve this goal.
+4. As a final note, don’t confuse using a view with saving memory when creating a collection. The benefit of using a view in regards to performance comes with how the view works with transformer methods.
+#### Populating a collection with a range
+1. Call the range method on sequences that support it, or create a Range and convert it to the desired sequence. 
+2. In the first approach, the range method is available on the companion object of supported types like Array, List, Vector, ArrayBuffer, and others.
+3. The REPL shows the collections that can be created directly from a Range: toArray, toList, toString, toBuffer, toIndexedSeq, toIterable, toIterator, toMap, toSeq, toSet, toStream, toTraversable. Using this approach is useful for some collections, like Set, which don’t offer a range method:
+   ``` 
+   //intentional error, value range is not a member of object Set
+   val set = Set.range(0, 5)
+   ```
+#### Creating and using enumerations
+1. Extend the scala.Enumeration class to create your enumeration:
+   ```
+   package com.acme.app {
+        object Margin extends Enumeration {
+                type Margin = Value
+                val TOP, BOTTOM, LEFT, RIGHT = Value
+                }
+        }
+   ```
+#### Tuples, for when you just need a bag of things
+1. A tuple gives you a way to store a group of heterogeneous items in a container:
+   ``` 
+   case class Person(name: String)
+   val t = (3, "Three", new Person("Al"))
+   
+   scala> t._1
+   res1: Int = 3
+   scala> t._2
+   res2: java.lang.String = Three
+   scala> t._3
+   res3: Person = Person(Al)
+   ```
+2. You can also convert a tuple to a collection
+   ```
+   val t = ("Al", "Alabama")
+   t.productIterator.toArray
+   //res0: Array[Any] = Array(AL, Alabama)
+   ```
+#### Sorting a collection
+1. The sorted method can sort collections with type Double, Float, Int, and any other type that has an implicit scala.math.Ordering
+2. The sortWith method lets you provide your own sorting function.
+3. Mix the Ordered trait into the class, and implement a _compare_ method; then you can use the class with the sorted method.
+4. An added benefit of mixing the Ordered trait into your class is that it also lets you compare object instances directly in your code; This works because the Ordered trait implements the <=, <, >, and >= methods, and calls your compare method to make those comparisons.
+   ```
+   if (al > ty) println("Al") else println("Tyler")
+        ^^^^^
+   ```
+#### Converting a collection to a String with mkString
+1. Use the mkString method to print a collection as a String.
+   ```
+   val a = Array("apple", "banana", "cherry")
+   
+   scala> a.mkString
+   res1: String = applebananacherry
+   
+   scala> a.mkString(" ")
+   res2: String = apple banana cherry
+   
+   scala> a.mkString("[", ", ", "]")
+   res4: String = [apple, banana, cherry]
+   ```
+2. You can also use the toString method on a collection, but it returns the name of the collection with the elements in the collection listed inside parentheses
+   ``` 
+   val v = Vector("apple", "banana", "cherry")
+   v.toString
+   //res0: String = Vector(apple, banana, cherry)
+   ```
