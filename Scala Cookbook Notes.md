@@ -757,3 +757,45 @@
    v.toString
    //res0: String = Vector(apple, banana, cherry)
    ```
+### Ch11 List, Array, Map, Set(and More)
+#### list
+1. List immutable
+2. ListBuffer mutable
+3. Stream, a lazy version of a list
+4. Array, its elements can be changed, its size cannot be changed
+5. ArrayBuffer, completely mutable array
+6. Multidimensional Arrays: 
+   ``` 
+   //approach 1, ofDim is unique to the Array class, there is no such method
+   //on a List Vector ArrayBuffer,etc.
+   Array.ofDim(x)(y)(z)
+   //approach 2: array of arrays; allows you to create ragged array; you can
+   //use this technique to create list of list, vector of vectors,etc.
+   val a = Array(Array("a", "b", "c"), Array("d", "e"))
+   ```
+7. Map: 
+   + auto imported Map is the immutable Map;
+   + to use the mutable Map, use ```collection.mutable.Map("AL" -> "Alabama")```
+   + SortedMap; LinkedHashMap; ListMap
+   + accessing maps: 
+   
+   ``` 
+   //approach 1
+   val states = Map("AL" -> "Alabama").withDefaultValue("Not found")
+   states("foo") // Not found
+   //approach 2
+   val s = states.getOrElse("FOO", "No such state")  //No such state
+   //approach 3
+   val az = states.get("AZ") // Some(Arizona)
+   val za = states.get("FOO") // None
+   ```
+   
+   + To get the keys, use ```keySet``` to get the keys as a Set, ```keys``` to get an Iterable, or ```keysIterator``` to get the keys as an iterator; To get the values from a map, use the ```values``` method to get the values as an Iterable, or ```valuesIterator``` to get them as an Iterator
+   + To test for the existence of a key in a map, use the contains method; To test whether a value exists in a map, use the valuesIterator method to search for the value using exists and contains
+   + filtering maps, sorting maps by key or value; finding the largest key or value
+8. Set
+   + Set, mutable Set, SortedSet(when used with your own classes, you have to extend the ordered trait, and implement a compare method)
+9. Queue: FIFO, immutable, mutable
+10. Stack: LIFO, immutable, mutable
+11. Range
+   
