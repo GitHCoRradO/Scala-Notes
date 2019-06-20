@@ -798,6 +798,37 @@
 9. Queue: FIFO, immutable, mutable
 10. Stack: LIFO, immutable, mutable
 11. Range
-### Actors and concurrency
+### Ch13 Actors and concurrency
 #### Check out [Akka.io documentations](https://akka.io/docs/)
+
+### Ch20 Idioms
+#### Eliminate null values from your code
+1. "Ban ```null``` from any of your code. Period."
+2. the following demonstrates how not to use ```null``` values in different situations:
+   + When a var field in a class or method doesn’t have an initial default value, initialize it with Option instead of null.
+   + When a method doesn’t produce the intended result, you may be tempted to return null. Use an Option or Try instead.
+   + If you’re working with a Java library that returns null, convert it to an Option, or something else.
+3. if you want the error information instead of a Some or None, use the Try/ Success/ Failure approach instead:
+   ``` 
+   import scala.util.{Try, Success, Failure}
    
+   object Test extends App {
+        def readTextFile(filename: String): Try[List[String]] = {
+            Try(io.Source.fromFile(filename).getLines.toList)
+        }
+   val filename = "/etc/passwd" 
+   readTextFile(filename) match {
+        case Success(lines) => lines.foreach(println)
+        case Failure(f) => println(f)
+      }
+   }
+   ```
+#### Using the Option/Some/None pattern
+1. Getting the value from an Option:
+   + use ```getOrElse```
+   + use ```foreach```
+   + use a match expression
+2. Use Try, Success, and Failure: 
+   + Scala 2.10 introduced scala.util.Try as an approach that’s similar to Option, but re‐ turns failure information rather than a None.
+   + The result of a computation wrapped in a Try will be one of its subclasses: Success or Failure. If the computation succeeds, a Success instance is returned; if an exception was thrown, a Failure will be returned, and the Failure will hold information about what failed.
+3. Prior to Scala 2.10,  an approach similar to Try was available with the Either, Left, and Right classes. With these classes, Either is analogous to Try, Right is similar to Success, and Left is similar to Failure.
