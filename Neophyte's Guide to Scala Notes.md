@@ -104,3 +104,52 @@
    + pattern ```head :: _``` matches List with at least 1 elements, i.e. not empty; head is matched with head of the List
    + as for the [Pattern Matching `@` Symbol](https://stackoverflow.com/questions/20748858/pattern-matching-symbol): it makes list refer to the object ```head :: _``` itself
 ### Part 4: Pattern Matching Anonymous Functions
+#### pattern matching anonymous functions
+1. A pattern matching anonymous function is an anonymous function that is defined as a block consisting of a sequence of cases, surrounded as usual by curly braces, but without a ```match``` keyword before the block:
+   ``` 
+   //nornal anonymous functions:
+   val wordFrequencies = ("habitual", 6) :: ("and", 56) :: ("consuetudinary", 2) ::
+     ("additionally", 27) :: ("homely", 5) :: ("society", 13) :: Nil
+   def wordsWithoutOutliers(wordFrequencies: Seq[(String, Int)]): Seq[String] =
+     wordFrequencies.filter(wf => wf._2 > 3 && wf._2 < 25).map(_._1)
+   wordsWithoutOutliers(wordFrequencies) // List("habitual", "homely", "society")
+   
+   //pattern matching anonymous funcstions:
+   def wordsWithoutOutliers(wordFrequencies: Seq[(String, Int)]): Seq[String] =
+     wordFrequencies.filter { case (_, f) => f > 3 && f < 25 } map { case (w, _) => w }
+   ```
+#### Partial functions
+1. In short, partial function is a unary function that is known to be defined only for certain input values and that allows clients to check whether it is defined for a specific input value.
+   ```
+   //simple form
+   val pf: PartialFunction[(String, Int), String] = {
+        case (word, freq) if freq > 3 && freq < 25 => word
+        }
+   //explicitly extending the PartialFunction trait
+   val pf = new PartialFunction[(String, Int), String] {
+        def apply(wordFrequency: (String, Int) = wordFrequency match {
+            case (word, freq) if freq > 3 && freq < 25) => word
+            }
+        def isDefinedAt(wordFrequency: (String, Int)) = wordFrequency match {
+            case (word, freq) if freq >3 && freq < 25 => true
+            case _ => false
+            }
+        }
+   ```
+### Part 5: The Option Type
+#### Option types can be equally viewed as a Collection just like other collections List, Map, Set, Seq,etc. In this regard, Option is like a container of no element or exactly one element.
+#### Pattern matching
+   ``` 
+   val user = User(2, "Johanna", "Doe", 30, None)
+   val gender = user.gender match {
+     case Some(gender) => gender
+     case None => "not specified"
+   }
+   println("Gender: " + gender)
+   ```
+#### As with other collections, Option can be used with Map,flatMap, for comprehension
+   ``` 
+   for {
+     User(_, _, _, _, Some(gender)) <- UserRepository.findAll
+   } yield gender
+   ```
