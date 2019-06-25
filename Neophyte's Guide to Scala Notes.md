@@ -137,7 +137,8 @@
         }
    ```
 ### Part 5: The Option Type
-#### Option types can be equally viewed as a Collection just like other collections List, Map, Set, Seq,etc. In this regard, Option is like a container of no element or exactly one element.
+#### Option type
+1. Option types can be equally viewed as a Collection just like other collections List, Map, Set, Seq,etc. In this regard, Option is like a container of no element or exactly one element.
 #### Pattern matching
    ``` 
    val user = User(2, "Johanna", "Doe", 30, None)
