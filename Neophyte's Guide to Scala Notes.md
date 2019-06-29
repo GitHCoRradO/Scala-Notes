@@ -1,6 +1,6 @@
 ## Neophyte's Guide to Scala Notes
 
-### Part 1: Extractors
+### Part ~: Extractors
 #### Several good examples:
    ``` 
    //#1
@@ -154,3 +154,96 @@
      User(_, _, _, _, Some(gender)) <- UserRepository.findAll
    } yield gender
    ```
+### Part 6 Error handling with Try
+#### The semantics of Try
+1. Where Option[A] is a container for a value of type A that may be present or not, Try[A] represents a computation that may result in a value of type A, if it is successful, or in some Throwable if something has gone wrong. Instances of such a container type for possible errors can easily be passed around between concurrently executing parts of your application.
+2. There are two different types of Try: If an instance of Try[A] represents a successful computation, it is an instance of Success[A], simply wrapping a value of type A. If, on the other hand, it represents a computation in which an error has occurred, it is an instance of Failure[A], wrapping a Throwable, i.e. an exception or other kind of error.
+3. Working with Try values:
+   ``` 
+   // If the given url is syntactically correct, this will be a Success[URL]. If the URL constructor throws a MalformedURLException, however, it will be a Failure[URL]
+   import scala.util.Try
+   import java.net.URL
+   def parseURL(url: String): Try[URL] = Try(new URL(url))
+   
+   //you can check if a Try is a success by calling isSuccess on it and then
+   // conditionally retrieve the wrapped value by calling get on it
+   //it is also possible to use getOrElse to pass in a default value to be
+   //returned if the Try is a Failure
+   val url = parseURL(Console.readLine("URL: ")) getOrElse new URL("http://duckduckgo.com")
+   
+   ```
+#### Chaining operations
+1. Like Option, Try type supports all the higher-order methods from other types of collections.
+   + mapping and flat mapping
+   ``` 
+   import java.io.InputStream
+   //return type Try[Try[Try[InputStream]]]
+   def inputStreamForURL(url: String): Try[Try[Try[InputStream]]] = parseURL(url).map { u =>
+     Try(u.openConnection()).map(conn => Try(conn.getInputStream))
+   }
+   //return type Try[InputStream]
+   def inputStreamForURL(url: String): Try[InputStream] = parseURL(url).flatMap { u =>
+     Try(u.openConnection()).flatMap(conn => Try(conn.getInputStream))
+   }
+   ```
+   + filter and foreach
+   ``` 
+   def parseHttpURL(url: String) = parseURL(url).filter(_.getProtocol == "http")
+   parseHttpURL("http://apache.openmirror.de") // results in a Success[URL]
+   parseHttpURL("ftp://mirror.netcologne.de/apache.org") // results in a Failure[URL]
+   //The function passed to foreach is executed only if the Try is a Success, which allows you to execute a side-effect. The function passed to foreach is executed exactly once in that case, being passed the value wrapped by the Success
+   parseHttpURL("http://danielwestheide.com").foreach(println)
+   ```
+   + pattern matching
+   ``` 
+   import scala.util.Success
+   import scala.util.Failure
+   getURLContent("http://danielwestheide.com/foobar") match {
+     case Success(lines) => lines.foreach(println)
+     case Failure(ex) => println(s"Problem rendering URL content: ${ex.getMessage}")
+   }
+   ```
+2. Recovering from a failure
+   ``` 
+   import java.net.MalformedURLException
+   import java.io.FileNotFoundException
+   val content = getURLContent("garbage") recover {
+     case e: FileNotFoundException => Iterator("Requested page does not exist")
+     case e: MalformedURLException => Iterator("Please make sure to enter a valid URL")
+     case _ => Iterator("An unexpected error has occurred. We are so sorry!")
+   }
+   ```
+3. Other methods supported by Try type: orElse, transform, recoverWith,etc.(worth looking at)
+### Part 7: The Either Type
+#### The semantics
+1. Like Option and Try, Either is a container type: An Either[A, B] instance can contain either an instance of A, or an instance of B.
+2. Either has exactly two sub types, Left and Right. If an Either[A, B] object contains an instance of A, then the Either is a Left. Otherwise it contains an instance of B and is a Right.
+3. error handling is a popular use case for it, and by convention, when using it that way, the Left represents the error case, whereas the Right contains the success value.
+   ``` 
+   //createing an Either
+   import scala.io.Source
+   import java.net.URL
+   def getContent(url: URL): Either[String, Source] =
+     if (url.getHost.contains("google"))
+       Left("Requested URL is blocked for the good of the people!")
+     else
+       Right(Source.fromURL(url))
+   //you can ask an instance of Either if it isLeft or isRight; you can
+   //also do pattern matching on it
+   getContent(new URL("http://google.com")) match {
+     case Left(msg) => println(msg)
+     case Right(source) => source.getLines.foreach(println)
+   }
+   
+   ```
+#### Projections
+1. call left or right on an Either value, you get a LeftProjection or RightProjection; then you can call map, flatmap on the projection.
+2. If you want to transform an Either value regardless of whether it is a Left or a Right, you can do so by means of the fold method that is defined on Either, expecting two transform functions with the same result type, the first one being called if the Either is a Left, the second one if it’s a Right.
+3. **Be careful when dealing with for comprehensions**
+4. call toOption on one of Either's Projection to get an Option
+#### When to use Either
+1. Error handling; processing collections
+
+### Part 8: Welcome to the Future
+
+      
