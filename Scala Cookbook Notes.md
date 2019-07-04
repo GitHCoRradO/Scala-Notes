@@ -801,6 +801,131 @@
 ### Ch13 Actors and concurrency
 #### Check out [Akka.io documentations](https://akka.io/docs/)
 
+### Ch19 Types
+#### Variance
+1. Type variance is a generic type concept, and defines the rules by which parameterized types can be passed into methods.
+
+   | Symbols         |        Name            | Description                        |
+   |-----------------|------------------------|------------------------------------|
+   | Array[T]        |     Invarirant         |Used when elements in the container |
+   |                 |                        |are mutable                         |
+   |                 |                        |eg. can only pass Array[String] to a|
+   |                 |                        |method expecting Array[String]      |
+   |-----------------|------------------------|------------------------------------|
+   | Seq[+A]         |    Covariant           |Used when elements in that container|
+   |                 |                        |are immutable                       |
+   |                 |                        |eg. can only pass Seq[String] to a  |
+   |                 |                        |method expected Seq[Any]            |
+   |-----------------|------------------------|------------------------------------|
+   | Foo[-A]         |   Contravariant        |Contravariance is essentially the   |
+   |                 |                        |opposite of covariance, and is      |
+   |Function1[-A, +B]|                        |rarely used.                        |
+   |-----------------|------------------------|------------------------------------|
+2. Bounds: they let you place restrictions on type parameters.
+   + A <: B   Upper bound    A must be a subtype of B
+   + A >: B   Lower bound    A must be a supertype of B
+   + A <: Upper >: Lower   Lower and upper bounds used together  The type A has both an upper and lower bound
+#### Creating classes that use generic types
+1. Scala standard is that simple types' naming conventions are A, the next with B,and so on.
+   ``` 
+   //create a linked-list with generic type A
+   class LinkedList[A] { /* ....*/ }
+   // a hierachy of classes
+   class GrandParent { }
+   class Parent { }
+   class Child { }
+   
+   val family = new LinkedList[GrandParent]
+   
+   val grandpa = new GrandParent
+   val papa = new Parent
+   val me = new Child
+   //the following are all ok
+   family.add(grandpa)
+   family.add(papa)
+   family.add(me)
+   ```
+2. The last line won’t compile because (a) printPersonTypes wants a LinkedList[GrandParent], (b) LinkedList elements are mutable, and (c) children is a LinkedList[Child]. This creates a conflict the compiler can’t resolve.
+   ``` 
+   def printPersonTypes(persons: LinkedList[GrandParent]) {
+        persons.printAll()
+        }
+   val children = new LinkedList[Child]
+   children.add(me)
+   
+   //won't compile
+   printPersonTypes(children)
+   ```
+#### Using Duck Typing
+1. Scala's version of "Duck Typing" is known as using a structural type.
+
+#### Make mutable collections invariant
+1. When creating a collection of elements that can be changed (mutated), its generic type parameter should be declared as [A], making it invariant.
+   ``` 
+   //code example
+   class Array[A] ...
+   class ArrayBuffer[A] ...
+   
+   trait Animal {
+        def speak
+        }
+   class Dog(var name: String) extends Animal {
+        def speak { println("woof")
+        override def toString = name
+        }
+   class SuperDog(name: String) extends Dog(name) {
+        def useSuperPower { println("Using my superpower!") }
+        }
+        
+   val fido = new Dog("Fido")
+   val wonderDog = new SuperDog("Wonder Dog")
+   val shaggy = new SuperDog("Shaggy")
+   val dogs = ArrayBuffer[Dog]()
+   dogs += fido
+   dogs += wonderdog
+   
+   import collection.mutable.ArrayBuffer
+   def makeDogsSpeak(dogs: ArrayBuffer[Dog]) {
+        dogs.foreach(_.speak)
+        }
+   val superDogs = ArrayBuffer[SuperDog]()
+   superDogs += shaggy
+   superDogs += wonderdog
+   makeDogsSpeak(superDogs)  //ERROR: won't compile
+   ```
+2. The last line won't compile because of the conflict built up in this situation
+   + Elements in an ArrayBuffer can be mutated.
+   + makeDogsSpeak is defined to accept a parameter of type ArrayBuffer[Dog].
+   + You’re attempting to pass in superDogs, whose type is ArrayBuffer[SuperDog].
+   + If the compiler allowed this, makeDogsSpeak could replace SuperDog elements in superDogs with plain old Dog elements. This can’t be allowed.
+   
+#### Make immutable collections covariant
+1. You can define a collection of immutable elements as invariant, but your collection will be much more flexible if you declare that your type parameter is covariant. To make a type parameter covariant, declare it with the + symbol, like [+A].
+2. Had we defined the ```makeDogsSpeak``` as ```def makeDogsSpeak(dogs: Seq[Dog])```, that ```makeDogsSpeak(superDogs)``` would compile; because scala defined Seq as ```trait Seq[+A]```: Seq is immutable and defined with a covariant parameter type.
+3. If we change definition of ```Seq[+A]``` to ```Seq[A]```, the last line still won't compile, because type A is invariant.
+
+#### Create a collection whose elements are all of some base type
+1. Define the class or method by specifying the type parameter with an upper bound.
+   ```
+   trait Basetrait
+   class SubClass1 extends Basetrait
+   class SubClass2 extends Basetrait
+   trait Othertrait1
+   trait Othertrait2
+   
+   class Crew[A <: Basetrait] extends ArrayBuffer[A]
+   
+   val class1s = new Crew[SubClass1]()
+   val class2s = new Crew[SubClass2]()
+   
+   class Crew[A <: Basetrait with Othertrait1] extends ArrayBuffer[A]
+   val class11 = new SubClass1 with Othertrait1
+   val class1ss = new Crew[SubClass1 with Othertrait1]()
+   class1ss += class11
+   ```
+#### Selectively Adding New Behavior to a Closed Model
+1. Here is the problem: You have a closed model, and want to add new behavior to certain types within that model, while potentially excluding that behavior from being added to other types.
+2. Here is one solution: you can implement your solution as a type class.
 ### Ch20 Idioms
 #### Eliminate null values from your code
 1. "Ban ```null``` from any of your code. Period."

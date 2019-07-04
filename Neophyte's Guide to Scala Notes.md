@@ -245,5 +245,23 @@
 1. Error handling; processing collections
 
 ### Part 8: Welcome to the Future
-
-      
+#### Semantics of Future
+1. ```Future``` is a write-once container: after a future has been completed, it is effectively immutable. The ```Future``` type only provides an interface for reading the value to be computed. The task of writing the computed value is achieved via a ```Promise```.
+#### Composing futures
+1. ```Future``` is a container type: you can map, flatMap, filter and use for comprehensions on ```Future```.
+2. Sometimes, you may want to be able to work in this nice functional way for the timeline in which things go wrong. By calling the failed method on an instance of ```Future[T]```, you get a failure projection of it, which is a Future[Throwable]. Now you can map that ```Future[Throwable]```, for example, and your mapping function will only be executed if the original ```Future[T]``` has completed with a failure.
+### Part 9: Promises and Futures in Practice
+#### Future-based programming in practice
+1. Non-blocking IO: web application talks to databases, act as a client calling other web services, try to make use of Java's non-blocking IO capabilities,either via Java's NIO API directly or through a library like Netty.
+2. Blocking IO & Long-running computations: dedicated thread pool, seperate ```ExecutionContext```.
+### Part 10: Staying DRY with higher-order functions
+#### Higher-order functions
+1. A higher-order function, as opposed to first-order function, can have one of threee forms:
+   + One or more of its parameters is a function, and it returns some value.
+   + It returns a function, but none of its parameters is a function.
+   + Both of the above: One or more of its parameters is a function, and it returns a function.
+### Part 11: Currying and Partially Applied Functions
+#### Difference between ```PartialFunction``` and parially applied functions:
+   + Partially applied function: when applying the function, you do not pass in arguments for all of the parameters defined by the functions,but only for some of them, leaving the remaining one blank. What you get back is a new function whose parameter list only contains those parameters from the original function that were left blank.
+   + ```PartialFunction``` type, aka partially defined function, means that its domain is partially defined for input parameters.
+### Part 12: Type Classes
