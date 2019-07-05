@@ -927,9 +927,31 @@
 1. Here is the problem: You have a closed model, and want to add new behavior to certain types within that model, while potentially excluding that behavior from being added to other types.
 2. Here is one solution: you can implement your solution as a type class.
 ### Ch20 Idioms
+#### Create methods with no side effects(Pure functions)
+1. Pure function; referential transparency
+2. several statements about pure functions:
+   + A pure function is given one or more input parameters.
+   + Its result is based solely off of those parameters and its algorithm. The algorithm will not be based on any hidden state in the class or object it’s contained in.
+   + It won't mutate the parameters it’s given.
+   + It won't mutate the state of its class or object.
+   + It doesn't perform any I/O operations, such as reading from disk, writing to disk, prompting for input, or reading input.
+#### Prefer immutable objects
+1. Prefer immutable collections. For instance, use immutable sequences like List and Vector before reaching for the mutable ArrayBuffer.
+2. Prefer immutable variables. That is, prefer val to var.
+#### Think "Expression-Oriented Programming"
+1. Difference between statements and expressions:
+   + Statements do not return results and are executed solely for their side effects, while expressions always return a result and often do not have side effects at all.
+2. EOP
+   + An expression-oriented programming language is a programming language where every (or nearly every) construction is an expression, and thus yields a value.
+#### Use Match Expressions and pattern matching
+1. match expression are used in many situations:
+   + In try/catch expressions
+   + As the body of a function or method
+   + With the Option/Some/None coding pattern
+   + In the receive method of actors
 #### Eliminate null values from your code
 1. "Ban ```null``` from any of your code. Period."
-2. the following demonstrates how not to use ```null``` values in different situations:
+2. the following demonstrates how to not use ```null``` values in different situations:
    + When a var field in a class or method doesn’t have an initial default value, initialize it with Option instead of null.
    + When a method doesn’t produce the intended result, you may be tempted to return null. Use an Option or Try instead.
    + If you’re working with a Java library that returns null, convert it to an Option, or something else.
