@@ -801,6 +801,58 @@
 ### Ch13 Actors and concurrency
 #### Check out [Akka.io documentations](https://akka.io/docs/)
 
+### Ch18 The Simple Build Tool
+#### Creating a project directory structure for SBT
+1. Use a shell script
+#### Compiling, Running, and Packaging a scala project with SBT
+1. Use ```sbt``` in command line to enter SBT interactive mode; this improves the speed of the compile run package,etc. processes.
+2. You can run multiple commands at one time, such as: ```> clean compile```
+3. Descriptions of most common SBT commands:
+
+   | Command                 |        Description                                                           |
+   |-------------------------|------------------------------------------------------------------------------|
+   | clean                   |Removes all generated files from the target directory.                        |
+   | compile                 |Compiles source code files that are in src/main/scala, src/main/java, and the |
+   |                         |root directory of the project.                                                |
+   | ~ compile               |Automatically recompiles source code files while you’re running  SBT in       |
+   |                         | interactive mode (i.e., while you’re at the SBT command prompt).             |
+   | help <command>          | help list common commands. when given a command, provides description        |
+   |package                  |Creates a JAR file (or WAR file for web projects) containing  the files in    |
+   |                         |src/main/scala, src/main/java, and resources in src/main/resources.           |
+   |publish                  |Publishes your project to a remote repository.                                |
+   |publish-local            |Publishes your project to a local Ivy repository.                             |
+   |reload                   |                                                                              |
+   |run                      |compile and run                                                               |
+   |test                     |compile and run all tests                                                     |
+   |update                   |updates external dependencies                                                 |
+4. ```last <last command>``` prints logging information for the last command that was executed. This can help you understand what’s happening, including understanding why some‐ thing is being recompiled over and over when using incremental compilation.
+   + Typing help last in the SBT interpreter shows a few additional details, including a note about the last-grep(deprecated, replaced with lastGrep) command, which can be useful when you need to filter a large amount of output.
+#### Managing dependencies with SBT
+1. unmanaged dependencies(JAR files) are added to the lib folder in the root directory of SBT project.
+2. conventions:
+   ``` libraryDependencies += groupID % artifactID % revision
+       
+       libraryDependencies += groupID % artifactID % revision % configuration
+       
+       libraryDependencies += groupID %% artifactID % revision
+       
+       libraryDependencies ++= Seq(
+            groupID1 % artifactID1 % revision1,
+            groupID2 % artifactID2 % revision2,
+            groupID3 % artifactID3 % revision3,
+            "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
+       )
+   ```
+3. The %% method adds your project’s Scala version to the end of the artifact name. The practice of adding the Scala version  to the artifactID is used because modules may be compiled for different Scala versions.
+4. ```libraryDependencies += "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"``` this means that the dependency you’re defining “will be added to the classpath only for the Test configuration, and won’t be added in the Compile configuration. This is useful for adding dependencies like ScalaTest, specs2, Mockito, etc., that will be used when you want to test your application, but not when you want to compile and run the application.
+#### Controlling which version of a managed dependency is used
+1. The ```revision``` field in the libraryDependencies setting isn’t limited to specifying a single, fixed version. According to the Apache Ivy documentation, you can specify terms such as latest.integration, latest.milestone, and other terms.
+2. The Ivy dependency documentation states that the following tags can be used:
+   + ```latest.[any status]``` such as ```latest.milestone```
+   + end the revision with a ```+``` character. This selects the latest subrevision of the dependency module. For instance, if the dependency module exists in revisions 1.0.3, 1.0.7, and 1.1.2, specifying 1.0.+ as your dependency will result in 1.0.7 being selected.
+   + [version ranges](http://ant.apache.org/ivy/history/2.2.0/ivyfile/dependency.html#revision)
+#### Creating a project with subprojects
+1. see [SBT Multi-Project documentation](https://www.scala-sbt.org/release/docs/Multi-Project.html) for more instructions.
 ### Ch19 Types
 #### Variance
 1. Type variance is a generic type concept, and defines the rules by which parameterized types can be passed into methods.
