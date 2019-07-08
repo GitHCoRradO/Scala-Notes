@@ -853,6 +853,73 @@
    + [version ranges](http://ant.apache.org/ivy/history/2.2.0/ivyfile/dependency.html#revision)
 #### Creating a project with subprojects
 1. see [SBT Multi-Project documentation](https://www.scala-sbt.org/release/docs/Multi-Project.html) for more instructions.
+#### Generating Project API Documentation
+1. SBT commands:
+   + ```doc``` create scaladoc API documentation from scala source code files in src/main/scala
+   + ```test:doc``` create API documentation for src/test/scala
+#### Specifying a Main Class to Run
+1. when you have multiple main classes, you have to specify which main class for sbt to run
+2. one way: add a line to build.sbt file
+   ``` 
+   //set the main class for 'sbt run'
+   mainClass in (Compile, run) := Some("com.Foo")
+   
+   //set the main class for packaging the main jar
+   mainClass in (Compile, packageBin) := Some("com.Foo")
+   ```
+3. another way: when running application with SBT
+   ``` 
+   $ sbt "run-main com.Foo"
+   //or sbt interactive mode
+   $ sbt
+   
+   > run-main com.Foo
+   ```
+#### Using GitHub Projects as Project Dependencies
+1. example:
+   ``` 
+   //put the following contents in a file named project/Build.scala in your SBT project
+   import sbt._
+   
+   object MyBuild extends Build {
+        lazy val root = Project("root", file("."))
+                                .dependsOn(soundPlayerProject)
+                                .dependsOn(appleScriptUtils)
+        lazy val soundPlayerProject =
+        RootProject(uri("git://github.com/alvinj/SoundFilePlayer.git"))
+        lazy val appleScriptUtils = 
+        RootProject(uri("git://github.com/alvinj/AppleScriptUtils.git"))
+   }
+   
+   ```
+2. then you can use the github library. this works fine for compiling and running your project, yet you cannot package all of this code into a JAR file by just using the ```sbt package``` command. SBT  does not include the code from GitHub. you may use a plug-in name sbt-assenbly for this purpose.
+#### Telling SBT How to find a repository(Working with resolvers)
+1. Use the ```resolvers``` key in the build.sbt file
+   ``` 
+   // format:
+   // resovlers += "repository name" at "location"
+   resolvers += "Typesafe" at "http://repo.typesafe.com/typesafe/releases/"
+   
+   //to add multiple resolvers:
+   resolvers ++= Seq(
+         "Typesafe" at "http://repo.typesafe.com/typesafe/releases/",
+         "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"
+   )
+   ```
+#### Resolving Problems by Getting an SBT stack trace
+1. When an SBT command silently fails (typically with a “Nonzero exit code” message), but you can’t tell why, run your command from within the SBT shell, then use the ```last run``` command after the command that failed.
+#### Setting the SBT Log Level
+1. set the SBT logging level in build.sbt: ```logLevel := Level.Debug```
+2. working interactively from SBT command line:
+   ```> set logLevel := Level.Debug```
+3. other logging levels :
+   + ```Level.Info```
+   + ```Level.Warning```
+   + ```Level.Error```
+#### Deploying a Single, Executable JAR File
+1. ```sbt package``` command creates a JAR file including class files it compiles from your source code as well as with the resources in the projcet(from src/main/resources); it does not include project dependencies and libraries from the Scala distribution needed to execute JAR file with the ```java``` command.
+2. Use an SBT plug-in such as sbt-assembly to build a single, complete JAR file.
+
 ### Ch19 Types
 #### Variance
 1. Type variance is a generic type concept, and defines the rules by which parameterized types can be passed into methods.
