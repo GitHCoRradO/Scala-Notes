@@ -1,4 +1,4 @@
-## Daily Records of almost everything about tech, work, etc.
+## Miscellaneous Daily Records about tech, work, etc.
 
 ### 2019-7-2
 
@@ -67,3 +67,21 @@
 
 #### MySQL update a bunch of rows which meet a certain request
    + ```update `tablename` set `columnname` ='newvalue' where `anothercolumnname` ='someRequest'; ```
+### 2019-7-9
+#### rename a directory
+   + ```$ mv thisDirectory/ Directorywithnewname/```
+### 2019-7-10
+#### ```$ jps |grep -v Jps``` command
+   + ```jps``` is a terminal command; it is the Java Virtual Machine Process Status Tool
+   + The jps tool lists the instrumented HotSpot Java Virtual Machines (JVMs) on the target system. 
+   + SYNOPSIS: ```$ jps [options] [hostid]```
+   + if hostid is omitted, jps lists localhost JVM processes status
+   +```$ jps |grep -v Jps``` omits the Jps process itself which is also running on JVM.
+#### ```sftp``` command
+   + ```sftp username@remotehost``` default port 22
+   + ```sftp -oPort=22 username@remotehost``` -oPort option for specifying a port
+   + ```> get pathtoRemoteFile pathtoLocalDirectory``` for downloading a remote file
+   + ```> get -r pathtoRemoteDirectory pathtoLocalDirectory``` for downloading a remote Directory
+   + ```> put pathtoLocalFileOrDirectory pathtoRemoteDirectory``` for uploading a local file or directory
+   + in a sftp session, use ```!command``` to run commands on local machine
+   + ```> exit``` or ```> quit``` for exiting sftp program.
