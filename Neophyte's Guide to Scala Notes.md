@@ -265,3 +265,5 @@
    + Partially applied function: when applying the function, you do not pass in arguments for all of the parameters defined by the functions,but only for some of them, leaving the remaining one blank. What you get back is a new function whose parameter list only contains those parameters from the original function that were left blank.
    + ```PartialFunction``` type, aka partially defined function, means that its domain is partially defined for input parameters.
 ### Part 12: Type Classes
+### Part 13: Path-dependent types
+### Part 14: The Actor approach to concurrency

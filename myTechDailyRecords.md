@@ -61,7 +61,7 @@
    + ```$ git remote -v```
 #### set git global user.name and user.email
 1. ```git config --global user.name```
-2. ```git config --global email```
+2. ```git config --global user.email```
 3. ```git config --global user.name "username"```
 4. ```git config --global user.email "useremail"```
 
@@ -85,3 +85,37 @@
    + ```> put pathtoLocalFileOrDirectory pathtoRemoteDirectory``` for uploading a local file or directory
    + in a sftp session, use ```!command``` to run commands on local machine
    + ```> exit``` or ```> quit``` for exiting sftp program.
+### 2019-7-16
+#### To get a value out of a scala ```Option```: 
+1. Directly extracting the value out
+   + match expression
+   ``` 
+   val res = option match {
+       case Some(i) => i
+       case None => default
+   }
+   ```
+   + ```getOrElse```
+   ``` 
+   val res = option.getOrElse(default)
+   ```
+2. Applying a function while extracting the value from the Option
+   + match expression
+   ``` 
+   def f(...) = { ... }
+   
+   val res = option match {
+       case Some(i) => f(i)
+       case None => default
+   }
+   ```
+   + use ```map``` followed by ```getOrElse```
+   ``` 
+   val res = option.map(f).getOrElse(default)
+   ```
+   + call ```fold``` on the ```Option```
+   ```
+   //applies the function f to the value in a Some, or returns the default value if option is really a None.
+   val res = option.fold(default)(f)
+   ```
+#### [What is the relation between Iterable and Iterator?](https://stackoverflow.com/questions/11302270/what-is-the-relation-between-iterable-and-iterator)
