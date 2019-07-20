@@ -119,3 +119,55 @@
    val res = option.fold(default)(f)
    ```
 #### [What is the relation between Iterable and Iterator?](https://stackoverflow.com/questions/11302270/what-is-the-relation-between-iterable-and-iterator)
+### 2019-7-17
+#### [Check what port MySQL is running on](https://serverfault.com/questions/116100/how-to-check-what-port-mysql-is-running-on)
+1. In MySQL session:
+
+   ``` mysql> SHOW GLOBAL VARIABLES LIKE 'PORT';```
+2. The best way to actually know what application is listening to which interface and on what port is to use ```netstat```
+
+   ``` 
+   //you can do this as root, option -p does not work on Mac OS X
+   $ netstat -tlnp
+   //sample output
+   Active Internet connections (only servers)
+   Proto Recv-Q Send-Q Local Address               Foreign Address             State       PID/Program name
+   tcp        0      0 127.0.0.1:9003              0.0.0.0:*                   LISTEN      16992/java
+   tcp        0      0 127.0.0.1:9999              0.0.0.0:*                   LISTEN      17233/php-fpm
+   tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN      5136/nginx
+   tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      -
+   tcp        0      0 0.0.0.0:12345               0.0.0.0:*                   LISTEN      -
+   tcp        0      0 127.0.0.1:15770             0.0.0.0:*                   LISTEN      -
+   tcp        0      0 0.0.0.0:443                 0.0.0.0:*                   LISTEN      5136/nginx
+   tcp        0      0 127.0.0.1:9000              0.0.0.0:*                   LISTEN      4184/java
+   tcp        0      0 :::22                       :::*                        LISTEN      -
+   tcp        0      0 :::12345                    :::*                        LISTEN      -
+   ```
+####[What is the utf8mb4_0900_ai_ci Collation?](https://www.monolune.com/what-is-the-utf8mb4_0900_ai_ci-collation/)
+1. ```utf8mb4``` has become the default character set, with ```utf8mb4_0900_ai_ci``` as the default collation in MySQL 8.0.1 and later.
+   + ```uft8mb4``` means that each character is stored as a maximum of 4 bytes in the UTF-8 encoding scheme.
+   + ```0900``` refers to the Unicode Collation Algorithm version. (The Unicode Collation Algorithm is the method used to compare two Unicode strings that conforms to the requirements of the Unicode Standard).
+   + ```ai``` refers accent insensitivity. That is, there is no difference between e, è, é, ê and ë when sorting.
+   + ```ci``` refers to case insensitivity. This is, there is no difference between p and P when sorting.
+2. If accent sensitivity and case sensitivity are required, you may use ```utf8mb4_0900_as_cs``` instead.
+### 2019-7-18
+#### sbt session, type in ```console``` command to enter console mode, then type in ```:paste``` to enter paste mode.
+
+###2010-7-19
+#### [How to zip or unzip files and folders using command line on Ubuntu server](https://www.wpoven.com/tutorial/how-to-zip-or-unzip-files-and-folders-using-command-line-on-ubuntu-server/)
+1. First get ```zip``` and ```unzip``` installed
+   + ```sudo apt-get install zip```
+   + ```sudo apt-get install unzip```
+2. ```-r``` option for zipping folder having more than one file or folder and do not use ```-r``` for single file
+   + ```zip -r pathtoDirectory/zippedname.zip orignial_folder```
+   + ```zip singlefile.zip original_file```
+
+#### To check out the amount of free or used disk space in Ubuntu
+1. Command line interface
+   + ```$ df -h```
+2. [refer to this ask ubuntu question](https://askubuntu.com/questions/73160/how-do-i-find-the-amount-of-free-space-on-my-hard-drive)
+#### Check out system specifications in Ubuntu
+1. ```$ lshw | less``` which means ls(list)hw(hardware)
+2. [refer to this ask ubuntu question](https://askubuntu.com/questions/55609/how-do-i-check-system-specifications)
+
+
