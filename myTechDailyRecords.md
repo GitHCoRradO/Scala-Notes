@@ -153,7 +153,7 @@
 ### 2019-7-18
 #### sbt session, type in ```console``` command to enter console mode, then type in ```:paste``` to enter paste mode.
 
-###2010-7-19
+###2019-7-19
 #### [How to zip or unzip files and folders using command line on Ubuntu server](https://www.wpoven.com/tutorial/how-to-zip-or-unzip-files-and-folders-using-command-line-on-ubuntu-server/)
 1. First get ```zip``` and ```unzip``` installed
    + ```sudo apt-get install zip```
@@ -169,5 +169,9 @@
 #### Check out system specifications in Ubuntu
 1. ```$ lshw | less``` which means ls(list)hw(hardware)
 2. [refer to this ask ubuntu question](https://askubuntu.com/questions/55609/how-do-i-check-system-specifications)
-
-
+### 2019-7-22
+#### [Execute Command Line Java program in background](https://stackoverflow.com/questions/3030605/execute-command-line-java-program-in-background)
+1. You can add ```&``` at the end of the command line to run it in the background.
+#### To check out CPU MEM usage in Ubuntu
+1. ```$ sudo apt-get install htop```
+2. run ```$ htop```

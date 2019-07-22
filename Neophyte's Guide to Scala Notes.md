@@ -1,6 +1,6 @@
 ## Neophyte's Guide to Scala Notes
 
-### Part ~: Extractors
+### Part 1: Extractors
 #### Several good examples:
    ``` 
    //#1
