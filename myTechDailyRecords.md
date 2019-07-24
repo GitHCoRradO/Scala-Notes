@@ -175,3 +175,17 @@
 #### To check out CPU MEM usage in Ubuntu
 1. ```$ sudo apt-get install htop```
 2. run ```$ htop```
+### 2019-7-23
+#### [SQL LIMIT](http://www.sqltutorial.org/sql-limit/)
+1. To retrieve a portion of rows returned by a query, use the ```LIMIT``` and ```OFFSET``` clauses.
+   ``` 
+   SELECT 
+       column_list
+   FROM
+       table1
+   ORDER BY column_list
+   LIMIT row_count OFFSET offset;
+   ```
+   + The ```row_count``` determines the number of rows that will be returned.
+   + The ```OFFSET```  clause skips the ```offset``` rows before beginning to return the rows. The ```OFFSET``` clause is optional so you can skip it. If you use both ```LIMIT``` and ```OFFSET``` clauses the ```OFFSET```  skips offset rows first before the ```LIMIT```  constrains the number of rows.
+2. When you use the ```LIMIT``` clause, it is important to use an ```ORDER BY``` clause to make sure that the rows in the returned are in a specified order.
