@@ -189,3 +189,15 @@
    + The ```row_count``` determines the number of rows that will be returned.
    + The ```OFFSET```  clause skips the ```offset``` rows before beginning to return the rows. The ```OFFSET``` clause is optional so you can skip it. If you use both ```LIMIT``` and ```OFFSET``` clauses the ```OFFSET```  skips offset rows first before the ```LIMIT```  constrains the number of rows.
 2. When you use the ```LIMIT``` clause, it is important to use an ```ORDER BY``` clause to make sure that the rows in the returned are in a specified order.
+
+### 2019-7-25
+#### Representing 1-element ```Seq``` and 1-element ```List```
+   ``` 
+   //1-element Seq
+   element +: Nil
+   //2-element Seq
+   e1 +: e2 +: Nil
+   //1-element List
+   element :: Nil
+   ```
+

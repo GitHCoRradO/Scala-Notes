@@ -176,7 +176,7 @@
 
 ### Chapter 4 Combining Actions
 #### Combinators in Detail
-1. ```andThen``` or ```>>>```
+1. ```andThen``` or ```>>```
    ``` 
    //to run one action after another using andThen; the combined actions are both run, but only the result of the second is returned.
    
@@ -220,4 +220,42 @@
             case n => insert(n)
    ```
 5. ```DBIO.sequence```
+6. ```DBIO.fold```
+7. ```zip```
+8. ```andFinally``` and ```cleanUp```
+9. ```asTry```
+
+#### Logging Queries and Results
+1. We can enable statement logging by turning up the logging to debug level. There are 5 kinds of Slick loggers. We can configure SLF4J in ```src/main/resources/logback.xml``` to control logging queries.
+
+   | Logger                             |      Will log...                                |
+   |------------------------------------|-------------------------------------------------|
+   |slick.jdbc.JdbcBackend.statement    |SQL sent to the database                         |
+   |slick.jdbc.JdbcBackend.parameter    |Parameters passed to a query.                    |
+   |slick.jdbc.StatementInvoker.result  |The first few results of each query.             |
+   |slick.session                       |Session events such as opening/closing connec􏰀ons.|
+   |slick                               |Everything!                                      |
+2. configurations added to ```logback.xml``` are like the following
+   ``` 
+   <logger name="slick.jdbc.JdbcBackend.statement" level="DEBUG"/>
+   ```
+
+#### Transactions
+1. Tie sets of modifications together in a transaction so that they either all succeed or all fail; use the ```transactionally``` method.
+   ``` 
+   def updateContent(old: String) = 
+        messages.filter(_.content === old).map(_.content)
    
+   exec {
+        (updateContent("Affirmative, Dave. I read you.").update("Wanna come in?")
+            andThen
+         updateContent("Open the pod bay doors, HAL.").update("Pretty please!")
+            andThen
+         updateContent("I'm sorry, Dave. I'm afraid I can't do that.").update("Opening now")).transactionally
+         }
+   ```
+### Chapter 5 Data Modelling
+#### Application Structure
+
+### Chapter 6 Joins and Aggregates
+#### Two kinds of Join

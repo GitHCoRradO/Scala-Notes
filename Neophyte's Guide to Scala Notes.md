@@ -127,7 +127,7 @@
         }
    //explicitly extending the PartialFunction trait
    val pf = new PartialFunction[(String, Int), String] {
-        def apply(wordFrequency: (String, Int) = wordFrequency match {
+        def apply(wordFrequency: (String, Int)) = wordFrequency match {
             case (word, freq) if freq > 3 && freq < 25) => word
             }
         def isDefinedAt(wordFrequency: (String, Int)) = wordFrequency match {

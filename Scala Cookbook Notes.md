@@ -133,6 +133,30 @@
    
 7. _case classes_ can be used in match expressions
 
+#### Adding if Expressions (Guards) to Case Statements
+1. add simple matches to your case statements on the left side of the expression. 
+   ``` 
+   i match {
+   case a if 0 to 9 contains a => println("0-9 range: " + a) 
+   case b if 10 to 19 contains b => println("10-19 range: " + b) 
+   case c if 20 to 29 contains c => println("20-29 range: " + c) 
+   case _ => println("Hmmm...")
+   }
+   ```
+   ``` 
+   def speak(p: Person) = p match {
+   case Person(name) if name == "Fred" => println("Yubba dubba doo") 
+   case Person(name) if name == "Bam Bam" => println("Bam bam!") 
+   case _ => println("Watch the Flintstones!")
+   }
+   ```
+2. all of these examples could be written by putting the if tests on the right side of the expressions; However, for many situations, your code will be simpler and easier to read by joining the if guard directly with the case statement.
+   ``` 
+   case Person(name) =>
+        if (name == "Fred") println("Yubba dubba doo") 
+        else if (name == "Bam Bam") println("Bam bam!")
+   ```
+
 ### Ch04 Classes and Properties
 
 #### The effect of constructor parameter settings
@@ -665,6 +689,27 @@
 1. [Methods may have multiple parameter lists. Its use cases are 3 of the following:
    SINGLE FUNCTIONAL PARAMETER, IMPLICIT PARAMETERS, PARTIAL APPLICATION](https://docs.scala-lang.org/tour/multiple-parameter-lists.html)
 2. reduceLeft, foldLeft, reduceRight, foldRight, scanLeft, scanRight
+   + ```reduceLeft``` walks through the sequence from left to right, it starts by applying the function to the first two elements, then apply the result to third element, and so on.
+   ``` 
+   val a = Array(12, 6, 15)
+   val b = a.reduceLeft(_ + _)      // Or         a.reduceLeft((x, y) => x + y)
+   //b = 33
+   ```
+   + ```reduceRight``` walks through from right to left. In many cases, ```reduceLeft``` and ```reduceRight``` make no difference; we can use ```reduce``` in this case. 
+   ``` 
+   //in some cases, reduceLeft and reduceRight are totally different
+   val a = Array(1, 2 , 4)
+   val b = a.reduceLeft(_ / _)
+   //b = 1 / 8
+   val c = a.reduceRight(_ / _)
+   //c = 2
+   ```
+   + ```foldLeft``` works just like ```reduceLeft``` except that ```foldLeft``` provides a starting value
+   ```
+   val a = Array(1, 2, 3)
+   val b = a.foldLeft(10)(_ + _)
+   //b = 16
+   ```
 #### Extracting unique elements from a sequence
 1. The distinct method returns a new collection with the duplicate values removed. Remember to assign the result to a new variable. This is required for both immutable and mutable collections.
 2. If you happen to need a Set, converting the collection to a Set is another way to remove the duplicate elements. 
