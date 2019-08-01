@@ -256,6 +256,312 @@
    ```
 ### Chapter 5 Data Modelling
 #### Application Structure
+1. Abstracting over Databases; the basic pattern:
+   + isolate our database code into a trait(or a few traits)
+   + declare the Slick profile as an abstract ```val``` and import from that
+   + extend our database trait to make the profile concrete
+2. Scaling to Larger Codebases
+   ``` 
+   trait Profile {
+        val profile: JdbcProfile
+        }
+   trait DatabaseModule1 { self: Profile =>
+        import profile.api._
+        }
+   trait DatabaseModule2 { self: Profile =>
+        import profile.api._
+        }
+   class DatabaseLayer(val profile: JdbcProfile) extends Profile with DatabaseModule1
+        with DatabaseModule2
+        
+   object Main extends App {
+        val databaseLayer = new DatabaseLayer(slick.jdbc.H2Profile)
+        }
+   ```
+   
+   ``` 
+   // TO work with a different database, we inject a different profile when we instantiate the
+   // database code
+   val anotherDatabaseLayer = new DatabaseLayer(slick.jdbc.PostgresProfile)
+   ```
+#### Representations for Rows
+1. Projections, ```ProvenShapes```, ```mapTo```, and ```<>```
+   + single column definition:
+   ``` 
+   final class MyTable(tag: Tag) extends Table[String](tag, "mytable") { 
+         def column1 = column[String]("column1")
+         def * = column1
+   }
+   ```
+   + Tuples of database columns map tuples of their type parameters. For example, ```(Rep[String], Rep[Int])``` is mapped to ```(String, Int)```
+   ``` 
+   final class MyTable(tag: Tag) extends Table[(String, Int)](tag, " mytable") {
+            def column1 = column[String]("column1") 
+            def column2 = column[Int]("column2") 
+            def * = (column1, column2)
+   }
+   ```
+   +  projection operator ```<>```
+   ``` 
+   case class User(name: String, id: Long)
+   
+   final class UserTable(tag: Tag) extends Table[User](tag, "user") {
+        def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+        def name = column[String]("name")
+        def * = (name, id) <> (User.tupled, User.unapply)
+   }
+   ```
+2. The two arguments to ```<>``` are:
+   + a func􏰀tion from ```A => B```, which converts from the exis􏰀ting shape’s unpacked row-level encoding ```(String, Long)``` to our preferred representa􏰀tion ```User```;
+   + a func􏰀tion from ```B=>Option[A]```, which converts the other way.
+3. we can supply these functions by hand if we want:
+   ``` 
+   def intoUser(pair: (String, Long)): User = User(pair._1, pair._2)
+   
+   def fromUser(user: User): Option[(String, Long)] = Some((user.name, user.id))
+   
+   /*    .....     and write the projection function like this      */
+   def * = (name, id) <> (intoUser, fromUser)
+   ```
+4. Heterogeneous Lists, for solving problems with more than 22 columns
+   ``` 
+   import slick.collection.heterogeneous.{ HList, HCons, HNil }
+   import slick.collection.heterogeneous.syntax._
+   import scala.language.postfixOps
+   
+   // defined type alias AttrHList
+   type AttrHList =
+            Long :: Long :: String :: Int :: String :: 
+            Int :: String :: Int :: String :: Int :: String :: 
+            Int :: String :: Int :: String :: Int :: String :: 
+            Int :: String :: Int :: String :: Int :: String :: 
+            Int :: String :: Int :: HNil
+   
+   final class AttrTable(tag: Tag) extends Table[AttrHList](tag, "attrs") {
+         def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+         def column1 = column[String]("column1")
+         /* 25 columns go here */
+         
+         def * = id :: column1 :: /* 22 method names go here */ :: HNil
+   }     
+   ```
+   
+   ``` 
+   // HList with case class
+   case class Attrs(id: Long, column1: String, /* ... */)
+   final class AttrTable(tag: Tag) extends Table[Attrs](tag, "attrs") {
+        def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+        def column1 = column[String]("column1")
+        /* 25 columns go here */
+        
+        
+        /* the pattern is like
+         *
+         * def * = (some hlist).mapTo[case class with the same fields]
+         *
+         */
+        def * = (id :: column1 :: /* 22 method names go here */ :: HNil).mapTo[Attrs]
+        }
+   ```
+#### Table and Column Representation
+1. Nullable Columns: if you want a nullable column you model it in Scala as an Option[T]. To select null columns from tables:
 
+   |Scala Code   | Operand Column types | Result type    |    SQL Equivalent      |
+   |-------------|----------------------|----------------|------------------------|
+   |col.isEmpty  | Option[A]            | Boolean        | col is null            |
+   |col.isDefined| Option[A]            | Boolean        | col is not null        |
+
+   ``` 
+   val myUsers = exec(users.filter(_.email.isEmpty).result)
+   // translated to SQL:
+   // SELECT * FROM "user" WHERE "email" IS NULL
+   ```
+2. Optional Primary Keys: use this to identify unsaved records(records with None primary key); in real databases there are no records with null primary key; in this case, it is not possible to retrieve records from databases with null primary key; any record will be guaranteed with a primary key on insert into to database. To represent such kind of column, use the following:
+   ``` 
+   case class User(id: Option[Long], name: String)
+   
+   class UserTable(tag: Tag) extends Table[User](tag, "user") {
+        def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+        def name = column[String]("name")
+        
+        def * = (id.?, name).mapTo[User]
+        //          ^  notice this ? method
+        }
+   ```
+3. Another way to represent primary key; and to represent compound primary keys
+   ``` 
+   def id = column[Long]("id", O.AutoInc)
+   def pk = primaryKey("pk_id", id)
+   ```
+   
+   ``` 
+   //compound primary keys
+   class OccupantTable(tag: Tag) extends Table[Occupant](tag, "occupant") {
+        def roomId = column[Long]("room")
+        def userId = column[Long]("user")
+        
+        def pk = primaryKey("room_user_pk", (roomId, userId))
+        
+        def * = (roomId, userId).mapTo[Occupant]
+   ```
+4. Indices
+   ``` 
+   class IndexExample(tag: Tag) extends Table[(String,Int)](tag, "people") {
+        def name = column[String]("name")
+        def age = column[Int]("age")
+        def * = (name, age)
+        
+        def nameIndex = index("name_idx", name, unique = true)
+        def compoundIndex = index("c_idx", (name, age), unique = true) 
+   }
+   ```
+5. Foreign Keys; the method of ```foreignKey``` takes four required parameters
+   + a name
+   + the column, or columns, that make up the foreign key
+   + the ```TableQuery``` that the foreign key belongs to
+   + a function on the supplied TableQuery[T] taking the supplied column(s) as parameters and returning an instance of T
+   
+   ``` 
+   case class Message(senderId : Long, content : String, id : Long = 0L)
+   
+   class MessageTable(tag: Tag) extends Table[Message](tag, "message") {
+        def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+        def senderId = column[Long]("sender")
+        def content = column[String]("content")
+        
+        def * = (senderId, content, id).mapTo[Message]
+        
+        def sender = foreignKey("sender_fk", senderId, users)(_.id)
+        }
+   ```
+   + On Update and On Delete: there are a number of referential actions that could be triggered. The default is for nothing to happen, but you can change that:
+   ```
+   NoAction
+   Cascade
+   Restrict
+   SetNull
+   SetDefault
+   ```
+   ```
+   def sender = foreignKey("sender_fk", senderId, users)(_.id, onDelete = ForeignKeyAction.Cascade)
+   ```
+6. Column Options are defined in ```ColumnOption```, they are accessed via ```O```:
+   ```
+   O.PrimaryKey
+   O.SqlType
+   O.Unique
+   O.Default
+   ```
+
+#### Custom Column Mappings
+1. Value classes: a good approach to model primary keys is using value classes.
+   ``` 
+   case class MessagePK(value: Long) extends AnyVal
+   
+   implicit val messagePKColumnType =
+        MappedColumnType.base[MessagePK, Long](_.value, MessagePK(_))
+   ```
+   
+   ``` 
+   //Slick provides a short-hand called MappedTo
+   case class MessagePK(value: Long) extends AnyVal with MappedTo[Long]
+   ```
+   + When we use ```MappedTo``` we don't need to define a separate ```ColumnType```. ```MappedTo``` works with any class that: has a method called ```value``` that returns the underlying database value; and has a single-parameter constructor to create the Scala value from the database value.
+2. Modelling sum types
+   ```
+   sealed trait Flag
+   
+   case object Important extends Flag
+   case object Offensive extends Flag
+   case object Spam extends Flag
+   
+   case class Message(
+        senderId: UserPK,
+        content: String,
+        flag: Option[Flag] = None,
+        id : MessagePK = MessagePK(0L))
+        
+   implicit val flagType =
+        MappedColumnType.base[Flag, Char](
+            flag => flag match {
+                case Important => '!'
+                case Offensive => 'X'
+                case Spam      => '$'
+            },
+            code => code match {
+                case '!' => Important
+                case 'X' => Offensive
+                case '$' => Spam
+            })
+   ```
+   ``` 
+   class MessageTable(tag: Tag) extends Table[Message](tag, "flagmessage") {
+    def id = column[MessagePK]("id", O.PrimaryKey, O.AutoInc)
+    def senderId = column[UserPK]("sender")
+    def content = column[String]("content")
+    def flag = column[Option[Flag]]("flag")
+    
+    def * = (senderId, content, flag, id).mapTo[Message]
+    
+    def sender = foreignKey("sender_fk", senderId, users)(_.id, onDelete= ForeignKeyAction.Cascade)
+   }
+   ```
+   + when querying messages with a particular flag, we need to give the compiler a little help with the types:
+   ``` 
+   exec(messages.filter(_.flag === (Important: Flag)).result
+   ```
+   + the type annotation here is annoying, we can work around it in two ways.
+   ``` 
+   // First, we can define a “smart constructor” method for each flag that returns it pre-cast as a Flag:
+   object Flags {
+        val important : Flag = Important 
+        val offensive : Flag = Offensive 
+        val spam : Flag = Spam
+        val action = messages.filter(_.flag === Flags.important).result 
+   }
+   
+   // Second, we can define some custom syntax to build our filter expressions:
+   implicit class MessageQueryOps(message: MessageTable) { 
+        def isImportant = message.flag === (Important : Flag) 
+        def isOffensive = message.flag === (Offensive : Flag) 
+        def isSpam = message.flag === (Spam : Flag)
+   }
+   
+   messages.filter(_.isImportant).result
+   ```
 ### Chapter 6 Joins and Aggregates
-#### Two kinds of Join
+#### Monadic Joins
+   ``` 
+   val q = for {
+        msg <- messages
+        //foreign key sender
+        usr <- msg.sender
+        } yield (usr.name, msg.content)
+   // OR
+   val q = messages flatMap { msg =>
+                msg.sender.map { usr =>
+                    (usr.name, msg.content)
+                    }
+                }
+   ```
+#### Applicative Joins
+1. An applicative join is where we explicitly write the join in code. In SQL this is via the JOIN and ON keywords, which are mirrored in Slick with the following methods:
+   + ```join``` -- an inner join
+   + ```joinLeft``` -- a left outer join
+   + ```joinRight``` -- a right outer join
+   + ```joinFull``` -- a full outer join
+#### Inner Join
+1. An inner join selects data from mul􏰀ple tables, where the rows in each table match up in some way. Typically, the matching up is done by comparing primary keys. If there are rows that don’t match up, they won’t appear in the join results.
+   ```
+   val usersAndRooms =
+        messages.
+        join(users).on(_.senderId === id).
+        join(rooms).on{ case ((msg, user), room) => msg.roomId === room.id }
+        
+   val usersAndRooms =
+        messages.
+        join(users).on(_.senderId === _.id). 
+        join(rooms).on(_._1.roomId === _.id)
+   ```
+   
+   

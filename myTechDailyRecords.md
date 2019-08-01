@@ -200,4 +200,7 @@
    //1-element List
    element :: Nil
    ```
-
+### 2019-7-29
+#### [How to get date and time using command line interface?](https://askubuntu.com/questions/634173/how-to-get-date-and-time-using-command-line-interface)
+1. ```date "+%H:%M:%S   %d/%m/%y"```
+2. OR simply ```date```
