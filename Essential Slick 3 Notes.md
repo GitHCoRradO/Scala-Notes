@@ -563,5 +563,129 @@
         join(users).on(_.senderId === _.id). 
         join(rooms).on(_._1.roomId === _.id)
    ```
+   + when turned into an action the action will contain nested tuples; ```map``` to get what you want; ```filter``` to select specific records.
+   ``` 
+   val action: DBIO[Seq[(Message, User), Room] = useraAndRooms.result
    
+   //map like this
+   val usersAndRooms =
+        messages.
+        join(users).on(_.senderId === _.id).
+        join(rooms).on { case ((msg,user), room) => msg.roomId === room.id }. 
+        map { case ((msg, user), room) => (msg.content, user.name, room.title) }
+   ```
+   ``` 
+   val usersAndRooms =
+        messages.
+        join(users).on(_.senderId === _.id).
+        join(rooms).on { case ((msg,user), room) => msg.roomId === room.id }
    
+   val airLockMsgs =
+        usersAndRooms.
+        filter { case (_, room) => room.title === "Air Lock" }   
+   ```
+#### Left Join
+1. Now we are selecting all the records from a table, and matching records from another table if they exist. If we find no matching record on the left, we will end up with NULL values in our results.
+   ``` 
+   val left = messages.joinLeft(rooms).on(_.roomId === _.id)
+   // Not all messages are in a room, so in that case the roomId column will be NULL. Slick will lift those possibly null values into something more comfortable: Option.
+   ```
+   
+   ``` 
+   val left = messages.joinLeft(rooms).on(_.roomId === _.id).
+   map { case (msg, room) => (msg.content, room.map(_.title)) }
+   // because the room element is optional, we naturally extract the title element using Option.map: room.map(_.title)
+   ```   
+#### Right Join
+1. a left join selects all the records from the left hand side of the join, with possibly NULL values from the right. Right joins reverse the situation, selecting all records from the right side of the join, with possibly NULL values from the left.
+   ``` 
+   val right = for {
+        (msg, room) <- messages joinRight (rooms) on (_.roomId === _.id)
+        } yield (room.title, msg.map(_.content))
+   ```
+#### Full Outer Join
+1. Full outer joins mean either side can be NULL.
+   ``` 
+   val outer = for {
+    (room, msg) <- rooms joinFull messages on (_.id === _.roomId)
+    } yield (room.map(_.title), msg.map(_.content))
+    
+    // Query[
+    //   (Rep[Option[String]], Rep[Option[String]]), (Option[String], Option[String]),
+    //   Seq]
+   ```
+#### Cross Joins
+1. In the examples above, whenever we've used ```join``` we've also used an ```on``` to constrain the join. If we omit the ```on``` condition for any join, joinLeft, or joinRight, we end up with a cross join. Cross joins include every row from the le􏰂 table with every row from the right table. If we have 10 rows in the first table and 5 in the second, the cross join produces 50 rows.
+   ``` 
+   val cross = messages joinLeft users
+   ```
+#### Zip Joins
+1. normal ```zip```
+   ``` 
+   val msgs = messages.sortBy(_.id.asc).map(_.content)
+   
+   val conversations = msgs zip msgs.drop(1) 
+   ```
+2. ```zipWith```
+   ``` 
+   // zipWith, lets us provide a mapping function along with the join.
+   def combiner(c1: Rep[String], c2: Rep[String]) = (c1.toUpperCase, c2.toLowerCase)
+   
+   val query = msgs.zipWith(msgs.drop(1), combiner)
+   ```
+3. ```zipWithIndex```
+   ``` 
+   val query = messages.map(_.content).zipWithIndex
+   
+   val action: DBIO[Seq[(String, Long)]] = query.result
+   ```
+
+#### Aggregation
+1. Aggregate functions are all about computing a single value from some set of rows.
+#### Functions
+   |            Method            |        SQL                             |
+   |------------------------------|----------------------------------------|
+   |       length                 |      COUNT(1)                          |
+   |min                           |     MIN(column)                        |
+   |max                           |     MAX(column)                        |
+   |sum                           |SUM(column)                             |
+   |avg                           |AVG(column) - mean of the column values |
+#### Grouping
+1. Aggregate functions are often used with column grouping. For exmaple, how many messages has each user sent? That's a grouping(by user) of an aggregate(count).
+2. ```groupBy``` to group rows by some expression. A ```groupBy``` must be followed by a ```map```
+   ``` 
+   val msgPerUser: DBIO[Seq[(Long, Int)]] = 
+        messages.groupBy(_.senderId).
+        map { case (senderId, msgs) => senderId -> msgs.length }.result
+   ```
+3. Groups and Joins
+   ``` 
+   val msgsPerUser =
+    messages.join(users).on(_.senderId === _.id).
+    groupBy { case (msg, user) => user.name }.
+    map     { case (name, group) => name -> group.length }.result
+    
+    exec(msgsPerUser).foreach(println)
+    // (HAL, 2)
+    // (Dave, 2)
+   ```
+4. More Complicated Grouping
+   ``` 
+   val stats =
+        messages.join(users).on(_.senderId === _.id).
+        groupBy { case (msg, user) => user.name }.
+        map     {
+           case (name, group) =>
+                (name, group.length, group.map{ case (msg, user) => msg.id}.min)
+           }
+   ```
+5. Grouping by Multiple columns
+   ``` 
+   val msgsPerRoomPerUser = 
+        rooms.
+        join(messages).on(_.id === _.roomId).
+        join(users).on { case ((room, msg), user) => user.id === msg.senderId }.
+        groupBy { case ((room, msg), user) => (room.title, user.name) }.
+        map { case((room,user), group) => (room, user, group.length) }.
+        sortBy { case (room, user, group) => room }
+   ```
