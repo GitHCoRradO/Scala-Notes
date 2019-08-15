@@ -204,3 +204,10 @@
 #### [How to get date and time using command line interface?](https://askubuntu.com/questions/634173/how-to-get-date-and-time-using-command-line-interface)
 1. ```date "+%H:%M:%S   %d/%m/%y"```
 2. OR simply ```date```
+
+### 2019-8-14
+#### IntelliJ IDEA: to go a specific line on OSX 'command + L'
+
+#### [Vim search and replace](https://vim.fandom.com/wiki/Search_and_replace)
+1. ```:%s/foo/bar/g```: Find each occurrence of 'foo' (in all lines), and replace it with 'bar'.
+2. ```:s/foo/bar/g```: Find each occurrence of 'foo' (in the current line only), and replace it with 'bar'.
