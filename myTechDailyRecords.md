@@ -211,3 +211,46 @@
 #### [Vim search and replace](https://vim.fandom.com/wiki/Search_and_replace)
 1. ```:%s/foo/bar/g```: Find each occurrence of 'foo' (in all lines), and replace it with 'bar'.
 2. ```:s/foo/bar/g```: Find each occurrence of 'foo' (in the current line only), and replace it with 'bar'.
+
+### 2019-8-17
+#### ```drop``` and ```dropWhile```
+1. ```drop``` drops the first ```i``` elements; ```dropWhile``` removes the first elements that match a predicate function.
+   ```
+   val a = List(1, 3, 5, 6, 5, 4, 3, 1)
+   a.drop(5)    //List(4, 3, 1)
+   
+   a.dropWhile(_ % 2 != 0)  //List(6, 5, 4, 3, 1) the 5 behind 6 is shielded by 6
+   ```
+2. Trimming Strings in scala
+   ``` 
+   val str = "   foo     "
+   str.trim         //trim to remove leading and trailing spaces
+   ```
+3. ```stripPrefix``` and ```stripSuffix```
+   ``` 
+   /** Returns this string with the given `prefix` stripped. If this string does not
+      *  start with `prefix`, it is returned unchanged.
+      */
+     def stripPrefix(prefix: String) =
+       if (toString.startsWith(prefix)) toString.substring(prefix.length)
+       else toString
+   
+   /** Returns this string with the given `suffix` stripped. If this string does not
+      *  end with `suffix`, it is returned unchanged.
+      */
+     def stripSuffix(suffix: String) =
+       if (toString.endsWith(suffix)) toString.substring(0, toString.length() - suffix.length)
+       else toString
+   ```
+   
+   ``` 
+   val str = ",,faker"
+   str.stripPrefix(",,")  // "faker"
+   
+   str.stripSuffix("faker")     //",,"
+   
+   str.stripSuffix("cer")       //",,faker"
+   ```
+4. [another stackoverflow example](https://stackoverflow.com/questions/17995260/trimming-strings-in-scala)
+
+   
