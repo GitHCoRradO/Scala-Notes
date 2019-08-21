@@ -252,5 +252,16 @@
    str.stripSuffix("cer")       //",,faker"
    ```
 4. [another stackoverflow example](https://stackoverflow.com/questions/17995260/trimming-strings-in-scala)
+### 2019-8-19
+#### To force quit apps: command + opt + esc
 
+### 2019-8-20
+#### mac terminal alias: edit .bash_profile:
+   ``` 
+   $ vim .bash_profile
+
+     #set alias
+     alias cdProjects = 'cd ~/projects'
+   $ source .bash_profile
+   ```
    
