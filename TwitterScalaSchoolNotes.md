@@ -98,3 +98,4 @@
    
    extensions.filter({ case PhoneExt(name, extension) => extension < 200 })
    ```
+### Type & polymorphism basics

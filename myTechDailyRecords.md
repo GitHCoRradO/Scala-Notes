@@ -264,4 +264,14 @@
      alias cdProjects = 'cd ~/projects'
    $ source .bash_profile
    ```
-   
+### 2019-8-27
+#### Soft link to a Directory in Linux/Mac OS X: 
+1. To create a soft link: ```$ ln -s /my/long/path/to/the/directory easyPath```
+2. To remove a soft link: ```$ rm easyPath``` or ```$ unlink easyPath```. Note that it removes only the soft link that you created, it does not remove the original directory/file that you soft linked.
+### 2019-8-29
+#### To delete from cursor to end of line on Vim:
+1. The command ```dw``` will delete from the current cursor position to the beginning of the next word character. The command ```d$``` will delete from the current cursor position to the end of the current line. ```D``` is a synonym for ```d$```.
+### 2019-8-30
+#### To change ssh login password for linux server:
+1. login to server
+2. ```$ passwd``` and then type in current password then new password
