@@ -275,3 +275,6 @@
 #### To change ssh login password for linux server:
 1. login to server
 2. ```$ passwd``` and then type in current password then new password
+
+### 2019-10-22
+#### mac keyboard shortcut 'command ⌘ + q' to quit current program.
