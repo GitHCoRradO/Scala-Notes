@@ -278,3 +278,11 @@
 
 ### 2019-10-22
 #### mac keyboard shortcut 'command ⌘ + q' to quit current program.
+
+### 2019-11-1
+#### PostgreSQL UPDATE SQLs:
+   ``` 
+   UPDATE table_name
+   SET column_name1 = value1, column_name2 = value2,……
+   [WHERE <condition>]; 
+   ```
