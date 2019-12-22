@@ -286,3 +286,25 @@
    SET column_name1 = value1, column_name2 = value2,……
    [WHERE <condition>]; 
    ```
+
+### 2019-12-4
+#### Vim: Deleting up to a certain line [link](https://stackoverflow.com/questions/2250546/deleting-up-to-a-certain-line-in-vim)
+1. delete from line 26 to line 199
+   + ``` :26, 199d```       cursor being anywhere
+   + ``` :.,199d```   ```.``` means the current line
+   + ``` d126G```     cursor on the current line 26
+
+### 2019-12-22
+#### PostgreSQL: NOT Condition
+1. combined with IN Condition
+   ```
+   SELECT *
+   FROM employees
+   WHERE last_name NOT IN ('Anderson', 'Johnson', 'Smith');
+   ```
+2. IS NOT NULL Condition
+   ``` 
+   SELECT *
+   FROM contacts
+   WHERE address IS NOT NULL;
+   ```
