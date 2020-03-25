@@ -308,3 +308,17 @@
    FROM contacts
    WHERE address IS NOT NULL;
    ```
+
+### 2020-03-23
+#### PostgreSQL LIKE pattern matching
+1. Percent (%)  for matching any sequence of characters.(zero or more number of characters)
+2. Underscore (_)  for matching any single character.
+   ``` 
+   SELECT 'foo' LIKE 'f%',  --- true
+          'f' LIKE 'f%',  --- true
+          'foo' LIKE 'foo',  ---true
+          'foo' LIKE 'f_',  ---false
+          'fa' LIKE 'f_',   ---true
+          'f' LIKE '%f%',   ---true
+          'foo' LIKE '_f_';   ---true
+   ```

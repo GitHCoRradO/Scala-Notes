@@ -46,3 +46,11 @@
      (a, b, c, d) => f(a)(b)(c)(d)
    }
    ```
+### Ex.2.5
+   ``` 
+   def compose[A, B, C](f: B => C, g: A => B): A => C = {
+     a : A => f(g(a))
+   }
+   ```
+### Notes for Ch3.1
+1. Adding ```sealed``` in front means that all implementations of the ```trait``` must be declared in this file.
