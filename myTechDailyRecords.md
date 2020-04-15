@@ -322,3 +322,13 @@
           'f' LIKE '%f%',   ---true
           'foo' LIKE '_f_';   ---true
    ```
+   
+### 2020-04-15
+#### Use the standurd output of one command as arguments of another command.
+   ``` 
+   # cat RUNNING_PID
+     1999
+   # kill -9 1999
+
+   # kill -9 $(cat RUNNING_PID)
+   ```
