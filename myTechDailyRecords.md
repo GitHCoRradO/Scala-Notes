@@ -332,3 +332,19 @@
 
    # kill -9 $(cat RUNNING_PID)
    ```
+
+### 2020-04-21
+#### [how to check out JDK JRE version on macOS](https://www.java.com/en/download/help/version_manual.xml)
+   ``` 
+   // JRE Version Command Line on Mac
+   $ /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java -version
+   java version "1.8.0_251"
+   Java(TM) SE Runtime Environment (build 1.8.0_251-b08)
+   Java HotSpot(TM) 64-Bit Server VM (build 25.251-b08, mixed mode)
+   
+   // Determining the Default Version of the JDK on Mac
+   $ java -version
+   java 11.0.7 2020-04-14 LTS
+   Java(TM) SE Runtime Environment 18.9 (build 11.0.7+8-LTS)
+   Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.7+8-LTS, mixed mode)
+   ```
