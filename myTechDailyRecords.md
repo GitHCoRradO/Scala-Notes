@@ -349,3 +349,96 @@
    Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.7+8-LTS, mixed mode)
    ```
 #### [Installation of the JDK and the JRE on macOS(and uninstallation)](https://docs.oracle.com/javase/9/install/installation-jdk-and-jre-macos.htm#JSJIG-GUID-2FE451B0-9572-4E38-A1A5-568B77B146DE)
+
+### 2020-04-27
+#### [PostgreSQL REPLACE Function](https://www.postgresqltutorial.com/postgresql-replace/)
+1. Syntax for the PostgreSQL REPLACE() function:
+   ``` REPLACE(source, old_text, new_text );```
+   + example:
+   ``` SELECT
+        REPLACE('ABC AA', 'A', 'D');
+   ```
+   + result:
+   ``` 
+   DBC DD
+   ```
+2. If you want to search and replace a substring in a table column, you use the following syntax:
+   ``` 
+   UPDATE
+    table_name
+   SET 
+    column_name = REPLACE(column, old_text,new_text)
+   WHERE
+    condition
+   ```
+   + example:
+   ``` 
+   table customer
+   first_name | last_name | email
+   Alice      | bob       | alice@gmail.com
+   Bob        | Cart      | bob@gmail.com
+   Cart       | David     | cart@foxmail.com
+   ```
+   + SQL:
+   ``` 
+   UPDATE customer
+   SET email =
+    REPLACE(email, 'gmail.com', 'yahoo.com');
+   ```
+   + result:
+   ``` 
+   table customer
+      first_name | last_name | email
+      Alice      | bob       | alice@yahoo.com
+      Bob        | Cart      | bob@yahoo.com
+      Cart       | David     | cart@foxmail.com
+   ```
+3. Regular expression replace syntax:
+   ```REGEXP_REPLACE(source, pattern, new_text [,flags])```
+   + example:
+   ``` 
+    SELECT
+    	regexp_replace(
+    		'foo bar foobar barfoo',
+    		'foo',
+    		'bar'
+    	);
+   ```
+   + result:
+   ``` bar bar foobar barfoo```
+   + example, ```i``` flag ignores case
+   ``` 
+   SELECT
+   	regexp_replace(
+   		'bar foobar bar bars',
+   		'Bar',
+   		'foo',
+   		'i'
+   	);
+   ```
+   + result:
+   ``` foo foobar bar bars```
+   + example, ```g``` flag means global:
+   ```
+   SELECT
+   	regexp_replace(
+   		'Bar sheepbar bar bars barsheep',
+   		'bar',
+   		'foo',
+   		'g'
+   	);
+   ```
+   + result:
+   ```Bar sheepfoo foo foos foosheep```
+   + example:
+   ``` 
+   SELECT
+   	regexp_replace(
+   		'Bar sheepbar bar bars barsheep',
+   		'bar',
+   		'foo',
+   		'gi'
+   	);
+   ```
+   + result:
+   ```foo sheepfoo foo foos foosheep```
