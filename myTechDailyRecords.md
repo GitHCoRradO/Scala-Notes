@@ -442,3 +442,11 @@
    ```
    + result:
    ```foo sheepfoo foo foos foosheep```
+
+#### Mr. Liutao's sharing on Event Sourcing and CQRS
+Tao’s sharing on ES & CQRS
+
+1. ES, Event Souring, focuses on events that are applied to Entities. The state of an Entity is calculated by replaying a series of events. Events can be in large quantity, thus making it a time-consuming poccess for calculating the state of an entity; therefore snapshots are used for period states in the series of events making it easier to calculate nearby subsequent states of a snapshot.
+2. CQRS is short for Command Query Responsibility Segregation.
+3. With Kafka, we can program with an ES style, a project model publishes events to Kafka, then other projects can consume the events the previous one published anyway as they like it, which is a CQRS style.
+
