@@ -450,3 +450,10 @@ Tao’s sharing on ES & CQRS
 2. CQRS is short for Command Query Responsibility Segregation.
 3. With Kafka, we can program with an ES style, a project model publishes events to Kafka, then other projects can consume the events the previous one published anyway as they like it, which is a CQRS style.
 
+### 2020-05-08
+#### Nginx reload conf
+   ``` 
+   sudo -s
+   nginx -t         // check whether conf file is malformed
+   nginx -s reload
+   ```
