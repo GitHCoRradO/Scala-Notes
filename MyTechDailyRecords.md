@@ -457,3 +457,11 @@ Tao’s sharing on ES & CQRS
    nginx -t         // check whether conf file is malformed
    nginx -s reload
    ```
+
+### 2020-08-13
+#### [PostgreSQL SUM Function](https://www.postgresqltutorial.com/postgresql-sum-function/)
+   ``` 
+   SELECT SUM(amount) AS total
+   FROM payment
+   WHERE customer_id = 2000;
+   ```
